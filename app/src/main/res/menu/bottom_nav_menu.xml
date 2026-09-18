@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_pantry"
+        android:icon="@drawable/ic_pantry"
+        android:title="@string/title_pantry" />
+    <item
+        android:id="@+id/navigation_recipes"
+        android:icon="@drawable/ic_recipes"
+        android:title="@string/title_recipes" />
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/title_settings" />
+</menu>
