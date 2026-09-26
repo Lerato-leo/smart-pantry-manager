@@ -58,7 +58,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
             StringBuilder ingredientsBuilder = new StringBuilder();
             for (za.ac.richfield.smartpantry.model.RecipeIngredient ingredient : recipe.getIngredients()) {
                 ingredientsBuilder.append("• ")
-                        .append(ingredient.getQuantity())
+                        .append(ingredient.getRequiredQuantity())
                         .append(" ")
                         .append(ingredient.getUnit())
                         .append(" ")

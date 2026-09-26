@@ -17,20 +17,20 @@
             android:id="@+id/tv_item_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textBodyLarge"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_item_quantity_unit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textBodyMedium" />
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
 
         <TextView
             android:id="@+id/tv_item_expiry_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textBodySmall"
+            android:textAppearance="?attr/textAppearanceBodySmall"
             android:textColor="?attr/colorSecondary" />
 
     </LinearLayout>

@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import za.ac.richfield.smartpantry.model.PantryItem;
 import za.ac.richfield.smartpantry.model.Recipe;
 import za.ac.richfield.smartpantry.model.RecipeIngredient;
+import za.ac.richfield.smartpantry.util.RecipeMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Recipe Ingredients table columns
     private static final String COLUMN_RECIPE_INGREDIENT_ID = "id";
-    private static final String COLUMN_RECIPE_ID = "recipe_id"; // foreign key to recipes
+    private static final String COLUMN_RI_RECIPE_ID = "recipe_id"; // foreign key to recipes
     private static final String COLUMN_INGREDIENT_NAME = "ingredient_name";
     private static final String COLUMN_REQUIRED_QUANTITY = "required_quantity";
     private static final String COLUMN_RECIPE_UNIT = "unit";
@@ -73,11 +74,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_RECIPE_INGREDIENTS =
             "CREATE TABLE " + TABLE_RECIPE_INGREDIENTS + " (" +
                     COLUMN_RECIPE_INGREDIENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    COLUMN_RECIPE_ID + " INTEGER NOT NULL, " +
+                    COLUMN_RI_RECIPE_ID + " INTEGER NOT NULL, " +
                     COLUMN_INGREDIENT_NAME + " TEXT NOT NULL, " +
                     COLUMN_REQUIRED_QUANTITY + " REAL NOT NULL, " +
                     COLUMN_RECIPE_UNIT + " TEXT, " +
-                    "FOREIGN KEY (" + COLUMN_RECIPE_ID + ") REFERENCES " + TABLE_RECIPES + "(" + COLUMN_RECIPE_ID + ") ON DELETE CASCADE" +
+                    "FOREIGN KEY (" + COLUMN_RI_RECIPE_ID + ") REFERENCES " + TABLE_RECIPES + "(" + COLUMN_RECIPE_ID + ") ON DELETE CASCADE" +
                     ");";
 
     public DatabaseHelper(@Nullable Context context) {
@@ -248,7 +249,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private void insertIngredient(SQLiteDatabase db, long recipeId, String ingredientName, double quantity, String unit) {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_RECIPE_ID, recipeId);
+        values.put(COLUMN_RI_RECIPE_ID, recipeId);
         values.put(COLUMN_INGREDIENT_NAME, ingredientName);
         values.put(COLUMN_REQUIRED_QUANTITY, quantity);
         values.put(COLUMN_RECIPE_UNIT, unit);
@@ -404,7 +405,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private List<RecipeIngredient> getIngredientsForRecipe(SQLiteDatabase db, long recipeId) {
         List<RecipeIngredient> ingredients = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_RECIPE_INGREDIENTS + " WHERE " + COLUMN_RECIPE_ID + " = ?";
+        String selectQuery = "SELECT * FROM " + TABLE_RECIPE_INGREDIENTS + " WHERE " + COLUMN_RI_RECIPE_ID + " = ?";
         Cursor cursor = db.rawQuery(selectQuery, new String[]{ String.valueOf(recipeId) });
 
         if (cursor.moveToFirst()) {

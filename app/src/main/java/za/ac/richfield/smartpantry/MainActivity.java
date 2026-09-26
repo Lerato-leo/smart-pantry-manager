@@ -2,6 +2,7 @@ package za.ac.richfield.smartpantry;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import za.ac.richfield.smartpantry.ui.pantry.PantryListFragment;
@@ -20,21 +21,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         bottomNavigationView = findViewById(R.id.nav_view);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int itemId = item.getItemId();
+            int titleResId = 0;
             if (itemId == R.id.navigation_pantry) {
                 selectedFragment = new PantryListFragment();
+                titleResId = R.string.title_pantry;
             } else if (itemId == R.id.navigation_recipes) {
                 selectedFragment = new SuggestedRecipesFragment();
+                titleResId = R.string.title_recipes;
             } else if (itemId == R.id.navigation_settings) {
                 selectedFragment = new SettingsFragment();
+                titleResId = R.string.title_settings;
             }
             if (selectedFragment != null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.nav_host_fragment, selectedFragment)
                         .commit();
+                setTitle(titleResId);
                 return true;
             }
             return false;
@@ -45,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.nav_host_fragment, new PantryListFragment())
                     .commit();
+            setTitle(R.string.title_pantry);
         }
     }
 }

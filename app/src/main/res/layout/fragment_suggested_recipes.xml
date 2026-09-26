@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/empty_recipes_message"
-        android:textAppearance="?attr/textBodyLarge"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:visibility="gone"
         android:padding="24dp" />
 

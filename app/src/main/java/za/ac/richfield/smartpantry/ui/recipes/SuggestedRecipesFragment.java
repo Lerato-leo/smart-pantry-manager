@@ -1,5 +1,6 @@
 package za.ac.richfield.smartpantry.ui.recipes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

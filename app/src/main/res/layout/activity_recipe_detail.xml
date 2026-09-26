@@ -34,7 +34,7 @@
                 android:id="@+id/tv_recipe_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textHeadlineMedium"
+                android:textAppearance="?attr/textAppearanceHeadlineMedium"
                 android:layout_marginBottom="16dp" />
 
             <TextView
@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Ingredients"
-                android:textAppearance="?attr/textHeadlineSmall"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp" />
 
@@ -57,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Preparation Steps"
-                android:textAppearance="?attr/textHeadlineSmall"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp" />
 
