@@ -24,4 +24,18 @@ public class QuantityFormatterTest {
         assertEquals("3", QuantityFormatter.formatWithUnit(3, null));
         assertEquals("3", QuantityFormatter.formatWithUnit(3, " "));
     }
+
+    @Test
+    public void formatWithUnit_pluralisesCountedUnits() {
+        assertEquals("3 units", QuantityFormatter.formatWithUnit(3, "unit"));
+        assertEquals("1 unit", QuantityFormatter.formatWithUnit(1, "unit"));
+        assertEquals("2 cans", QuantityFormatter.formatWithUnit(2, "can"));
+        assertEquals("0.5 cups", QuantityFormatter.formatWithUnit(0.5, "cup"));
+    }
+
+    @Test
+    public void formatWithUnit_leavesAbbreviationsAlone() {
+        assertEquals("800 g", QuantityFormatter.formatWithUnit(800, "g"));
+        assertEquals("2 tbsp", QuantityFormatter.formatWithUnit(2, "tbsp"));
+    }
 }

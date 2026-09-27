@@ -2,7 +2,9 @@ package za.ac.richfield.dijong.util;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Formats ingredient quantities for display: whole numbers without a trailing ".0"
@@ -24,9 +26,30 @@ public final class QuantityFormatter {
         }
     }
 
-    /** "800 g", or just "3" when there's no unit. */
+    /**
+     * Counted units that read as words, with their plurals. Measures like "g" or "tbsp" are
+     * abbreviations and stay as they are ("800 g", never "800 gs").
+     */
+    private static final Map<String, String> COUNT_UNIT_PLURALS = new HashMap<>();
+
+    static {
+        COUNT_UNIT_PLURALS.put("unit", "units");
+        COUNT_UNIT_PLURALS.put("slice", "slices");
+        COUNT_UNIT_PLURALS.put("clove", "cloves");
+        COUNT_UNIT_PLURALS.put("can", "cans");
+        COUNT_UNIT_PLURALS.put("bottle", "bottles");
+        COUNT_UNIT_PLURALS.put("pinch", "pinches");
+        COUNT_UNIT_PLURALS.put("cup", "cups");
+    }
+
+    /** "800 g", "3 units", "1 can", or just "3" when there's no unit. */
     public static String formatWithUnit(double quantity, String unit) {
         String amount = format(quantity);
-        return unit == null || unit.trim().isEmpty() ? amount : amount + " " + unit;
+        if (unit == null || unit.trim().isEmpty()) {
+            return amount;
+        }
+        String plural = COUNT_UNIT_PLURALS.get(unit);
+        boolean isOne = amount.equals("1");
+        return amount + " " + (plural != null && !isOne ? plural : unit);
     }
 }
