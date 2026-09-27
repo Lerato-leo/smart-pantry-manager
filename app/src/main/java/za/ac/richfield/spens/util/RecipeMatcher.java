@@ -36,18 +36,30 @@ public final class RecipeMatcher {
         if (rawName == null) {
             return "";
         }
-        String singularised = rawName.trim().toLowerCase();
-        if (singularised.endsWith("ies")) {
-            // berries -> berry
-            singularised = singularised.substring(0, singularised.length() - 3) + "y";
-        } else if (singularised.endsWith("es")) {
-            // tomatoes -> tomato
-            singularised = singularised.substring(0, singularised.length() - 2);
-        } else if (singularised.endsWith("s") && !singularised.endsWith("ss")) {
-            // onions -> onion, but glass stays glass
-            singularised = singularised.substring(0, singularised.length() - 1);
+        String name = rawName.trim().toLowerCase();
+        if (name.endsWith("ies") && name.length() > 4) {
+            // berries -> berry (but "pies" falls through to the plain -s rule below)
+            return name.substring(0, name.length() - 3) + "y";
         }
-        return singularised;
+        if (name.endsWith("es") && takesEsPlural(name.substring(0, name.length() - 2))) {
+            // tomatoes -> tomato, peaches -> peach
+            return name.substring(0, name.length() - 2);
+        }
+        if (name.endsWith("s") && !name.endsWith("ss") && !name.endsWith("us") && !name.endsWith("is")) {
+            // onions -> onion, apples -> apple; glass, hummus and couscous stay as they are
+            return name.substring(0, name.length() - 1);
+        }
+        return name;
+    }
+
+    /**
+     * English only adds "-es" (rather than "-s") after these endings, so only then is the
+     * whole "es" part of the plural. Everywhere else the "e" belongs to the word itself:
+     * "apples" is "apple" + "s", not "appl" + "es".
+     */
+    private static boolean takesEsPlural(String stem) {
+        return stem.endsWith("o") || stem.endsWith("x") || stem.endsWith("z")
+                || stem.endsWith("ch") || stem.endsWith("sh") || stem.endsWith("ss");
     }
 
     /**

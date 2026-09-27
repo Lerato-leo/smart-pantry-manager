@@ -40,8 +40,35 @@ public class RecipeMatcherTest {
     }
 
     @Test
+    public void normalizeIngredientName_handlesEsPluralAfterSibilants() {
+        assertEquals("peach", RecipeMatcher.normalizeIngredientName("peaches"));
+        assertEquals("box", RecipeMatcher.normalizeIngredientName("boxes"));
+    }
+
+    @Test
+    public void normalizeIngredientName_singularAndPluralOfWordsEndingInEMatch() {
+        // Regression: "apples" used to lose its "es" and become "appl", so it never
+        // matched a recipe asking for "apple".
+        assertEquals("apple", RecipeMatcher.normalizeIngredientName("apples"));
+        assertEquals("apple", RecipeMatcher.normalizeIngredientName("apple"));
+        assertEquals("clove", RecipeMatcher.normalizeIngredientName("cloves"));
+        assertEquals("cheddar cheese", RecipeMatcher.normalizeIngredientName("Cheddar Cheeses"));
+    }
+
+    @Test
+    public void normalizeIngredientName_shortIesWordsKeepTheirE() {
+        assertEquals("pie", RecipeMatcher.normalizeIngredientName("pies"));
+    }
+
+    @Test
     public void normalizeIngredientName_keepsSingularDoubleSEndings() {
         assertEquals("glass", RecipeMatcher.normalizeIngredientName("glass"));
+    }
+
+    @Test
+    public void normalizeIngredientName_keepsSingularUsEndings() {
+        assertEquals("hummus", RecipeMatcher.normalizeIngredientName("hummus"));
+        assertEquals("couscous", RecipeMatcher.normalizeIngredientName("couscous"));
     }
 
     @Test
