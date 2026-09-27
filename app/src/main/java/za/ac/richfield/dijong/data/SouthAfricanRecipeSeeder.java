@@ -17,11 +17,11 @@ final class SouthAfricanRecipeSeeder {
     }
 
     static void populateRecipes(RecipeDao recipeDao) {
-        addRecipe(recipeDao, "Pap en Chakalaka",
-                "1. Bring the water to the boil and stir in the maize meal to make stiff pap. "
+        addRecipe(recipeDao, "Maize Porridge with Spicy Bean Relish",
+                "1. Bring the water to the boil and stir in the maize meal to make a stiff porridge. "
                         + "2. Fry the onion and green pepper until soft. "
                         + "3. Stir in the baked beans and curry powder and simmer for 10 minutes. "
-                        + "4. Serve the chakalaka spooned over the pap.",
+                        + "4. Serve the relish spooned over the porridge.",
                 new Object[]{"maize meal", 250, "g"},
                 new Object[]{"water", 750, "ml"},
                 new Object[]{"onion", 1, "unit"},
@@ -29,17 +29,17 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"baked beans", 1, "can"},
                 new Object[]{"curry powder", 1, "tbsp"});
 
-        addRecipe(recipeDao, "Boerewors Rolls",
-                "1. Grill the boerewors over hot coals until cooked through. "
+        addRecipe(recipeDao, "Farmer's Sausage Rolls",
+                "1. Grill the sausage over hot coals until cooked through. "
                         + "2. Fry the onions until soft and caramelised. "
-                        + "3. Split the rolls and tuck in the boerewors. "
+                        + "3. Split the rolls and tuck in the sausage. "
                         + "4. Top with the fried onions and tomato relish.",
-                new Object[]{"boerewors", 500, "g"},
+                new Object[]{"sausage", 500, "g"},
                 new Object[]{"bread roll", 4, "unit"},
                 new Object[]{"onion", 2, "unit"},
                 new Object[]{"tomato relish", 100, "ml"});
 
-        addRecipe(recipeDao, "Bobotie",
+        addRecipe(recipeDao, "Spiced Mince Bake",
                 "1. Fry the onion and garlic, then brown the mince with curry powder. "
                         + "2. Stir in the chutney and the bread soaked in milk. "
                         + "3. Spoon into a dish and pour over an egg-and-milk custard. "
@@ -53,7 +53,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"egg", 2, "unit"},
                 new Object[]{"chutney", 2, "tbsp"});
 
-        addRecipe(recipeDao, "Melktert",
+        addRecipe(recipeDao, "Milk Tart",
                 "1. Line a dish with the pastry and blind bake. "
                         + "2. Heat the milk with a stick of cinnamon. "
                         + "3. Whisk in the eggs, sugar and flour, then thicken over low heat. "
@@ -65,7 +65,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"shortcrust pastry", 1, "unit"},
                 new Object[]{"cinnamon", 1, "tsp"});
 
-        addRecipe(recipeDao, "Koeksisters",
+        addRecipe(recipeDao, "Plaited Syrup Doughnuts",
                 "1. Make a soft dough and plait small pieces. "
                         + "2. Deep-fry the plaits until golden brown. "
                         + "3. Dip immediately into ice-cold sugar syrup. "
@@ -76,18 +76,18 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"yeast", 1, "tsp"},
                 new Object[]{"ginger", 1, "tsp"});
 
-        addRecipe(recipeDao, "Vetkoek with Curried Mince",
+        addRecipe(recipeDao, "Fried Dough Buns with Curried Mince",
                 "1. Make a yeast dough and leave it to rise until doubled. "
                         + "2. Deep-fry spoonfuls of dough until puffed and golden. "
                         + "3. Brown the mince with the onion and curry powder. "
-                        + "4. Split the vetkoek and spoon in the mince.",
+                        + "4. Split the buns and spoon in the mince.",
                 new Object[]{"flour", 300, "g"},
                 new Object[]{"yeast", 1, "tsp"},
                 new Object[]{"beef mince", 300, "g"},
                 new Object[]{"onion", 1, "unit"},
                 new Object[]{"curry powder", 1, "tbsp"});
 
-        addRecipe(recipeDao, "Malva Pudding",
+        addRecipe(recipeDao, "Baked Apricot Sponge Pudding",
                 "1. Cream the sugar and egg, then mix in the apricot jam and flour. "
                         + "2. Bake in a greased dish until springy to the touch. "
                         + "3. Warm the cream, butter and sugar together into a sauce. "
@@ -103,25 +103,25 @@ final class SouthAfricanRecipeSeeder {
                 "1. Cook the curry until the meat is tender and the sauce has reduced. "
                         + "2. Hollow out a quarter loaf of bread. "
                         + "3. Spoon the curry into the bread cavity. "
-                        + "4. Serve with the bread lid and a carrot sambal on the side.",
+                        + "4. Serve with the bread lid and a grated carrot salad on the side.",
                 new Object[]{"bread loaf", 1, "unit"},
                 new Object[]{"chicken", 400, "g"},
                 new Object[]{"curry powder", 2, "tbsp"},
                 new Object[]{"onion", 1, "unit"},
                 new Object[]{"potato", 2, "unit"});
 
-        addRecipe(recipeDao, "Potjiekos",
-                "1. Brown the meat in the potjie in batches. "
+        addRecipe(recipeDao, "Slow-Cooked Pot Stew",
+                "1. Brown the meat in a heavy pot in batches. "
                         + "2. Layer in the vegetables on top without stirring. "
                         + "3. Add the stock, cover, and simmer low and slow for several hours. "
-                        + "4. Serve straight from the pot with pap or rice.",
+                        + "4. Serve straight from the pot with maize porridge or rice.",
                 new Object[]{"beef", 500, "g"},
                 new Object[]{"potato", 3, "unit"},
                 new Object[]{"carrot", 2, "unit"},
                 new Object[]{"onion", 1, "unit"},
                 new Object[]{"beef stock", 500, "ml"});
 
-        addRecipe(recipeDao, "Sosaties",
+        addRecipe(recipeDao, "Curried Lamb Skewers",
                 "1. Marinate the meat overnight in the curry-and-apricot marinade. "
                         + "2. Thread the meat, onion and dried apricots onto skewers. "
                         + "3. Grill over hot coals, basting often with the marinade. "
@@ -132,7 +132,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"curry powder", 1, "tbsp"},
                 new Object[]{"apricot jam", 2, "tbsp"});
 
-        addRecipe(recipeDao, "Umngqusho (Samp and Beans)",
+        addRecipe(recipeDao, "Samp and Beans",
                 "1. Soak the samp and beans together overnight. "
                         + "2. Simmer until soft, topping up with water as needed. "
                         + "3. Fry the onion and stir it through. "
@@ -142,28 +142,28 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"onion", 1, "unit"},
                 new Object[]{"vegetable oil", 1, "tbsp"});
 
-        addRecipe(recipeDao, "Chakalaka",
+        addRecipe(recipeDao, "Spicy Bean Relish",
                 "1. Sauté the onion, carrot and green pepper until softened. "
                         + "2. Stir in the baked beans, curry powder and chilli. "
                         + "3. Simmer until thickened. "
-                        + "4. Serve warm as a relish alongside pap or a braai.",
+                        + "4. Serve warm as a relish alongside maize porridge or grilled meat.",
                 new Object[]{"onion", 1, "unit"},
                 new Object[]{"carrot", 2, "unit"},
                 new Object[]{"green pepper", 1, "unit"},
                 new Object[]{"baked beans", 1, "can"},
                 new Object[]{"curry powder", 1, "tsp"});
 
-        addRecipe(recipeDao, "Biltong and Cheese Board",
-                "1. Slice the biltong thinly against the grain. "
+        addRecipe(recipeDao, "Dried Beef and Cheese Board",
+                "1. Slice the dried beef thinly against the grain. "
                         + "2. Arrange it with the cheese and crackers on a board. "
                         + "3. Add a small bowl of chutney for dipping. "
                         + "4. Serve at room temperature.",
-                new Object[]{"biltong", 100, "g"},
+                new Object[]{"dried beef", 100, "g"},
                 new Object[]{"cheddar cheese", 150, "g"},
                 new Object[]{"crackers", 12, "unit"},
                 new Object[]{"chutney", 2, "tbsp"});
 
-        addRecipe(recipeDao, "Ouma's Rusks",
+        addRecipe(recipeDao, "Grandma's Rusks",
                 "1. Mix the dry ingredients, then work in the melted butter, eggs and buttermilk. "
                         + "2. Press the dough into a baking tin and bake until firm. "
                         + "3. Slice into fingers while still warm. "
@@ -174,18 +174,18 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"egg", 2, "unit"},
                 new Object[]{"buttermilk", 250, "ml"});
 
-        addRecipe(recipeDao, "Rooibos Iced Tea",
-                "1. Steep the rooibos tea bags in boiling water for 5 minutes. "
+        addRecipe(recipeDao, "Red Bush Iced Tea",
+                "1. Steep the red bush tea bags in boiling water for 5 minutes. "
                         + "2. Stir in the sugar and honey while still hot. "
                         + "3. Add the lemon juice and top up with cold water. "
                         + "4. Chill and serve over ice.",
-                new Object[]{"rooibos tea bag", 4, "unit"},
+                new Object[]{"red bush tea bag", 4, "unit"},
                 new Object[]{"water", 1, "l"},
                 new Object[]{"sugar", 30, "g"},
                 new Object[]{"lemon juice", 30, "ml"},
                 new Object[]{"honey", 1, "tbsp"});
 
-        addRecipe(recipeDao, "Frikkadels",
+        addRecipe(recipeDao, "Pan-Fried Meatballs",
                 "1. Soak the bread in milk, then mash it into the mince with the onion, egg and herbs. "
                         + "2. Shape into balls and flatten slightly. "
                         + "3. Fry in a hot pan until browned on both sides. "
@@ -206,7 +206,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"cream", 500, "ml"},
                 new Object[]{"peppermint chocolate", 3, "unit"});
 
-        addRecipe(recipeDao, "Pampoenkoekies (Pumpkin Fritters)",
+        addRecipe(recipeDao, "Pumpkin Fritters",
                 "1. Mash the cooked pumpkin and beat in the eggs. "
                         + "2. Fold in the flour, sugar and cinnamon to make a thick batter. "
                         + "3. Fry spoonfuls in hot oil until golden on both sides. "
@@ -217,7 +217,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"sugar", 2, "tbsp"},
                 new Object[]{"cinnamon", 1, "tsp"});
 
-        addRecipe(recipeDao, "Braaibroodjies",
+        addRecipe(recipeDao, "Grilled Cheese and Tomato Sandwiches",
                 "1. Butter the bread on the outside of each slice. "
                         + "2. Layer cheese, sliced tomato and onion between two slices. "
                         + "3. Grill over the coals on both sides until the bread toasts and the cheese melts. "
@@ -228,7 +228,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"onion", 1, "unit"},
                 new Object[]{"butter", 1, "tbsp"});
 
-        addRecipe(recipeDao, "Pampoensop (Butternut Soup)",
+        addRecipe(recipeDao, "Butternut Soup",
                 "1. Sauté the onion, then add the cubed butternut and curry powder. "
                         + "2. Pour in the stock and simmer until the butternut is soft. "
                         + "3. Blend until smooth. "
