@@ -96,6 +96,12 @@
         <item name="android:fontFamily">@font/poppins_semibold</item>
     </style>
 
+    <style name="TextAppearance.Dijong.EmptyTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/poppins_semibold</item>
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <!-- Uppercase section labels on the settings screen -->
     <style name="TextAppearance.Dijong.Overline" parent="TextAppearance.Material3.LabelLarge">
         <item name="fontFamily">@font/poppins_semibold</item>

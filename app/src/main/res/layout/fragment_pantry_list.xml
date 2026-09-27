@@ -1,20 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- My Dijong: a count line, the pantry cards, and the add button. The coordinator lets the
+     add button slide up out of the way when a snackbar appears. -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pantry_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:background="@color/cream">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_pantry"
+    <LinearLayout
+        android:id="@+id/pantry_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="@dimen/space_sm"
-        android:paddingBottom="@dimen/fab_clearance"
-        android:scrollbars="vertical" />
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/pantry_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="@dimen/space_md"
+            android:paddingBottom="@dimen/space_xs">
+
+            <TextView
+                android:id="@+id/tv_ingredient_count"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/ink_muted"
+                android:textSize="13sp"
+                tools:text="6 ingredients" />
+
+            <TextView
+                android:id="@+id/tv_expiring_soon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/ink_muted"
+                android:textSize="13sp"
+                app:drawableStartCompat="@drawable/shape_amber_dot"
+                tools:text="2 expiring soon" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_pantry"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="@dimen/space_xs"
+            android:paddingBottom="@dimen/fab_clearance"
+            android:scrollbars="vertical" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/empty_state"
@@ -28,30 +72,19 @@
         tools:visibility="visible">
 
         <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:alpha="0.5"
+            android:layout_width="176dp"
+            android:layout_height="144dp"
             android:contentDescription="@null"
-            app:srcCompat="@drawable/ic_pantry"
-            app:tint="?attr/colorPrimary" />
+            app:srcCompat="@drawable/ill_empty_pantry" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            android:gravity="center"
-            android:text="@string/empty_pantry_title"
-            android:textAppearance="?attr/textAppearanceTitleLarge"
-            android:textColor="?attr/colorOnSurface" />
+            style="@style/Widget.Dijong.EmptyTitle"
+            android:text="@string/empty_pantry_title" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
-            android:gravity="center"
-            android:text="@string/empty_pantry_message"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            style="@style/Widget.Dijong.EmptyMessage"
+            android:maxWidth="264dp"
+            android:text="@string/empty_pantry_message" />
 
     </LinearLayout>
 
@@ -60,8 +93,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/space_lg"
+        android:layout_margin="@dimen/space_md"
         android:contentDescription="@string/action_add_ingredient"
-        app:srcCompat="@drawable/ic_add_24" />
+        app:srcCompat="@drawable/ic_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

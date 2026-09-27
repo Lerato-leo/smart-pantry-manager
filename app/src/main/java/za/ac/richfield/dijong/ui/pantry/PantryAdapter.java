@@ -1,10 +1,11 @@
 package za.ac.richfield.dijong.ui.pantry;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,30 +17,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Objects;
 
 import za.ac.richfield.dijong.R;
+import za.ac.richfield.dijong.data.IngredientCategory;
 import za.ac.richfield.dijong.data.entity.PantryItem;
-import za.ac.richfield.dijong.util.ExpiryDateConverter;
+import za.ac.richfield.dijong.ui.ExpiryBadge;
+import za.ac.richfield.dijong.util.ExpiryStatus;
 import za.ac.richfield.dijong.util.QuantityFormatter;
 
 /**
- * Adapter for displaying pantry items in a RecyclerView.
+ * Binds pantry items to cards: a category-coloured icon, the name, the quantity with a
+ * category chip, and an expiry badge for anything that needs using up.
  */
 public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.PantryViewHolder> {
 
     private final OnItemClickListener clickListener;
-    private final OnDeleteClickListener deleteClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(PantryItem item);
     }
 
-    public interface OnDeleteClickListener {
-        void onDeleteClick(PantryItem item);
-    }
-
-    public PantryAdapter(OnItemClickListener clickListener, OnDeleteClickListener deleteClickListener) {
+    public PantryAdapter(OnItemClickListener clickListener) {
         super(DIFF_CALLBACK);
         this.clickListener = clickListener;
-        this.deleteClickListener = deleteClickListener;
     }
 
     private static final DiffUtil.ItemCallback<PantryItem> DIFF_CALLBACK = new DiffUtil.ItemCallback<PantryItem>() {
@@ -53,7 +51,8 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.PantryV
             return oldItem.getName().equals(newItem.getName())
                     && oldItem.getQuantity() == newItem.getQuantity()
                     && Objects.equals(oldItem.getUnit(), newItem.getUnit())
-                    && Objects.equals(oldItem.getExpiryDate(), newItem.getExpiryDate());
+                    && Objects.equals(oldItem.getExpiryDate(), newItem.getExpiryDate())
+                    && oldItem.getCategory().equals(newItem.getCategory());
         }
     };
 
@@ -71,19 +70,21 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.PantryV
     }
 
     public class PantryViewHolder extends RecyclerView.ViewHolder {
+        private final View iconCircle;
+        private final ImageView ivCategoryIcon;
         private final TextView tvName;
         private final TextView tvQuantityUnit;
-        private final TextView tvExpiryDate;
-        private final View statusDot;
-        private final ImageButton btnDelete;
+        private final TextView tvCategoryChip;
+        private final TextView tvExpiryBadge;
 
         public PantryViewHolder(@NonNull View itemView) {
             super(itemView);
+            iconCircle = itemView.findViewById(R.id.icon_circle);
+            ivCategoryIcon = itemView.findViewById(R.id.iv_category_icon);
             tvName = itemView.findViewById(R.id.tv_item_name);
             tvQuantityUnit = itemView.findViewById(R.id.tv_item_quantity_unit);
-            tvExpiryDate = itemView.findViewById(R.id.tv_item_expiry_date);
-            statusDot = itemView.findViewById(R.id.view_status_dot);
-            btnDelete = itemView.findViewById(R.id.btn_delete_item);
+            tvCategoryChip = itemView.findViewById(R.id.tv_category_chip);
+            tvExpiryBadge = itemView.findViewById(R.id.tv_expiry_badge);
 
             itemView.setOnClickListener(v -> {
                 int pos = getBindingAdapterPosition();
@@ -91,50 +92,24 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.PantryV
                     clickListener.onItemClick(getItem(pos));
                 }
             });
-
-            btnDelete.setOnClickListener(v -> {
-                int pos = getBindingAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION && deleteClickListener != null) {
-                    deleteClickListener.onDeleteClick(getItem(pos));
-                }
-            });
         }
 
         public void bind(PantryItem item) {
+            Context context = itemView.getContext();
             tvName.setText(item.getName());
-            btnDelete.setContentDescription(itemView.getContext().getString(
-                    R.string.content_desc_delete_item, item.getName()));
             tvQuantityUnit.setText(QuantityFormatter.formatWithUnit(item.getQuantity(), item.getUnit()));
 
-            Long expiryDate = item.getExpiryDate();
-            if (expiryDate == null) {
-                tvExpiryDate.setVisibility(View.GONE);
-                // INVISIBLE (not GONE) keeps the dot's width reserved, so the name column
-                // lines up whether or not a given card shows an expiry status.
-                statusDot.setVisibility(View.INVISIBLE);
-                return;
-            }
+            IngredientCategory category = item.getCategoryEnum();
+            ColorStateList background = ColorStateList.valueOf(ContextCompat.getColor(context, category.backgroundColorRes));
+            int foreground = ContextCompat.getColor(context, category.foregroundColorRes);
+            iconCircle.setBackgroundTintList(background);
+            ivCategoryIcon.setImageResource(category.iconRes);
+            ivCategoryIcon.setImageTintList(ColorStateList.valueOf(foreground));
+            tvCategoryChip.setText(category.labelRes);
+            tvCategoryChip.setBackgroundTintList(background);
+            tvCategoryChip.setTextColor(foreground);
 
-            tvExpiryDate.setVisibility(View.VISIBLE);
-            statusDot.setVisibility(View.VISIBLE);
-            tvExpiryDate.setText(itemView.getContext().getString(
-                    R.string.format_expires_on, ExpiryDateConverter.formatEpochDay(expiryDate)));
-
-            int statusColorRes = statusColorFor(expiryDate);
-            int statusColor = ContextCompat.getColor(itemView.getContext(), statusColorRes);
-            tvExpiryDate.setTextColor(statusColor);
-            statusDot.setBackgroundTintList(ColorStateList.valueOf(statusColor));
-        }
-
-        private int statusColorFor(long expiryEpochDay) {
-            long today = ExpiryDateConverter.todayEpochDay();
-            if (expiryEpochDay < today) {
-                return R.color.status_overdue;
-            }
-            if (expiryEpochDay <= today + ExpiryDateConverter.EXPIRY_SOON_WINDOW_DAYS) {
-                return R.color.status_soon;
-            }
-            return R.color.status_fresh;
+            ExpiryBadge.bind(tvExpiryBadge, ExpiryStatus.of(item.getExpiryDate()), false);
         }
     }
 }

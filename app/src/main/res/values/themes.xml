@@ -190,6 +190,26 @@
         <item name="android:textAppearance">@style/TextAppearance.Dijong.Pill</item>
     </style>
 
+    <!-- Empty states: 20sp title and a muted line of help under the illustration -->
+    <style name="Widget.Dijong.EmptyTitle" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">@style/TextAppearance.Dijong.EmptyTitle</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
+    <style name="Widget.Dijong.EmptyMessage" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/space_sm</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lineSpacingExtra">3sp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="android:textColor">@color/ink_muted</item>
+    </style>
+
     <style name="Widget.Dijong.SectionHeader" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

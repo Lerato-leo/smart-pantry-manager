@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.activity.result.ActivityResult;
@@ -17,18 +18,20 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import za.ac.richfield.dijong.AddEditIngredientActivity;
 import za.ac.richfield.dijong.R;
 import za.ac.richfield.dijong.data.entity.PantryItem;
+import za.ac.richfield.dijong.util.ExpiryDateConverter;
+import za.ac.richfield.dijong.util.PantrySorter;
 
 /**
- * Fragment that displays the list of pantry items.
- * Tapping a card edits it; the bin button deletes after a confirmation, and swiping a card
- * away deletes it straight away with an Undo on the snackbar. All reads/writes go through
+ * Fragment that displays the list of pantry items, expiring ones first, under a line
+ * counting ingredients and how many are expiring soon. Tapping a card edits it (and offers
+ * Delete there); swiping a card away deletes it straight away with an Undo on the snackbar.
+ * All reads/writes go through
  * {@link PantryViewModel}, which keeps this list live-updated whenever the
  * database changes (e.g. after saving in {@link AddEditIngredientActivity}).
  */
@@ -56,11 +59,14 @@ public class PantryListFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.rv_pantry);
         View emptyState = view.findViewById(R.id.empty_state);
+        View pantryContent = view.findViewById(R.id.pantry_content);
+        TextView tvIngredientCount = view.findViewById(R.id.tv_ingredient_count);
+        TextView tvExpiringSoon = view.findViewById(R.id.tv_expiring_soon);
         coordinator = view.findViewById(R.id.pantry_coordinator);
         FloatingActionButton fabAdd = view.findViewById(R.id.fab_add_ingredient);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new PantryAdapter(this::editItem, this::confirmDelete);
+        adapter = new PantryAdapter(this::editItem);
         recyclerView.setAdapter(adapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
@@ -84,10 +90,20 @@ public class PantryListFragment extends Fragment {
         fabAdd.setOnClickListener(v -> addItem());
 
         viewModel.getAllItems().observe(getViewLifecycleOwner(), items -> {
-            adapter.submitList(items);
             boolean isEmpty = items == null || items.isEmpty();
             emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-            recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+            pantryContent.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+            if (isEmpty) {
+                adapter.submitList(null);
+                return;
+            }
+            long today = ExpiryDateConverter.todayEpochDay();
+            adapter.submitList(PantrySorter.sortForDisplay(items, today));
+            tvIngredientCount.setText(getResources().getQuantityString(
+                    R.plurals.pantry_ingredient_count, items.size(), items.size()));
+            int expiringSoon = PantrySorter.countExpiringSoon(items, today);
+            tvExpiringSoon.setVisibility(expiringSoon > 0 ? View.VISIBLE : View.GONE);
+            tvExpiringSoon.setText(getString(R.string.pantry_expiring_soon, expiringSoon));
         });
     }
 
@@ -118,16 +134,6 @@ public class PantryListFragment extends Fragment {
                 }
             }
         }
-    }
-
-    /** The bin button asks first, since a stray tap shouldn't cost the user an ingredient. */
-    private void confirmDelete(PantryItem item) {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.dialog_delete_title, item.getName()))
-                .setMessage(R.string.dialog_delete_message)
-                .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.delete, (dialog, which) -> deleteWithUndo(item))
-                .show();
     }
 
     /**
