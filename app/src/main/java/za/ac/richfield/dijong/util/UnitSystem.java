@@ -27,12 +27,23 @@ public final class UnitSystem {
     }
 
     /**
-     * Re-expresses a recipe amount for display. Metric amounts are returned as they are;
-     * with imperial chosen, grams become ounces (or pounds from 1 lb up) and millilitres or
-     * litres become fluid ounces, rounded to one decimal place.
+     * Re-expresses a recipe amount for display. In metric, amounts under a kilogram or litre
+     * are shown in grams or millilitres ("200 g", not "0.2 kg"); otherwise they stay as they
+     * are. With imperial chosen, grams become ounces (or pounds from 1 lb up) and millilitres
+     * or litres become fluid ounces, rounded to one decimal place.
      */
     public static Amount forDisplay(double quantity, String unit, boolean imperial) {
-        if (!imperial || unit == null) {
+        if (unit == null) {
+            return new Amount(quantity, null);
+        }
+        if (!imperial) {
+            String canonical = RecipeMatcher.normalizeUnit(unit);
+            if (quantity < 1 && "kilogram".equals(canonical)) {
+                return new Amount(Math.round(quantity * 1000), "g");
+            }
+            if (quantity < 1 && "liter".equals(canonical)) {
+                return new Amount(Math.round(quantity * 1000), "ml");
+            }
             return new Amount(quantity, unit);
         }
         String canonical = RecipeMatcher.normalizeUnit(unit);

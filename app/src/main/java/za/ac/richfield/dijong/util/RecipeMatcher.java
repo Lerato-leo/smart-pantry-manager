@@ -1,9 +1,13 @@
 package za.ac.richfield.dijong.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import za.ac.richfield.dijong.data.RecipeWithIngredients;
 import za.ac.richfield.dijong.data.entity.PantryItem;
@@ -12,7 +16,14 @@ import za.ac.richfield.dijong.data.entity.RecipeIngredient;
 /**
  * Decides which recipes the current pantry stock can produce, by comparing what a recipe calls
  * for against what's on hand. The rule is deliberately strict: every ingredient must be present
- * in at least the required quantity, or the whole recipe is ruled out.
+ * in at least the required quantity, or the whole recipe is ruled out. Strict also means only
+ * usable stock counts: food past its expiry date is left out (see
+ * {@link #buildPantryQuantityMap(List, long)}), and an ingredient listed twice in a recipe must
+ * be covered twice over.
+ *
+ * <p>Names are compared loosely enough for real-world typing: case, plurals, punctuation and
+ * spacing don't matter, and a few South African alternative names are treated as the same
+ * ingredient (see {@link #NAME_ALIASES}). Tap water is never treated as an ingredient.
  *
  * <p>Quantities are compared in a shared base unit, so 1 kg of flour covers a recipe asking for
  * 500 g, and a 750 ml bottle of oil covers 2 tbsp. Mass and volume are only converted into each
@@ -73,22 +84,66 @@ public final class RecipeMatcher {
         GRAMS_PER_MILLILITRE.put("honey", 1.42);
         GRAMS_PER_MILLILITRE.put("apricot jam", 1.33);
         GRAMS_PER_MILLILITRE.put("chutney", 1.2);
+        GRAMS_PER_MILLILITRE.put("baking powder", 0.9);
+        GRAMS_PER_MILLILITRE.put("bicarbonate of soda", 0.9);
     }
+
+    /**
+     * Different names shoppers use for the same thing, mapped to the name recipes use. Only
+     * true equivalents belong here: "cake flour" is what South Africans call plain flour, but
+     * "chicken stock" is not chicken, so there's no loose word matching.
+     */
+    private static final Map<String, String> NAME_ALIASES = new HashMap<>();
+
+    static {
+        NAME_ALIASES.put("mielie meal", "maize meal");
+        NAME_ALIASES.put("mealie meal", "maize meal");
+        NAME_ALIASES.put("mielie pap", "maize meal");
+        NAME_ALIASES.put("cake flour", "flour");
+        NAME_ALIASES.put("plain flour", "flour");
+        NAME_ALIASES.put("all purpose flour", "flour");
+        NAME_ALIASES.put("white sugar", "sugar");
+        NAME_ALIASES.put("mince", "beef mince");
+        NAME_ALIASES.put("minced beef", "beef mince");
+        NAME_ALIASES.put("ground beef", "beef mince");
+        NAME_ALIASES.put("cheddar", "cheddar cheese");
+        NAME_ALIASES.put("butternut squash", "butternut");
+        NAME_ALIASES.put("full cream milk", "milk");
+        NAME_ALIASES.put("fresh cream", "cream");
+        NAME_ALIASES.put("brown onion", "onion");
+        NAME_ALIASES.put("white onion", "onion");
+        NAME_ALIASES.put("free range egg", "egg");
+        NAME_ALIASES.put("instant yeast", "yeast");
+        NAME_ALIASES.put("dry yeast", "yeast");
+    }
+
+    /** Comes from the tap, so a recipe that mentions it never waits on the pantry for it. */
+    private static final Set<String> ALWAYS_AVAILABLE = new HashSet<>(Arrays.asList("water", "tap water"));
 
     private RecipeMatcher() {
         // Static helpers only.
     }
 
     /**
-     * Reduces an ingredient name to a comparable form: lowercase, trimmed, and singular where
-     * a simple English plural is detected. "Tomatoes" and "tomato" must collapse to the same
-     * key so a pantry entry written either way still matches a recipe.
+     * Reduces an ingredient name to a comparable form: lowercase, with hyphens, punctuation and
+     * repeated spaces tidied away, singular where a simple English plural is detected, and
+     * mapped through {@link #NAME_ALIASES}. "Tomatoes", "tomato" and " Tomato " must collapse to
+     * the same key, and so must "Mielie-meal" and "maize meal", so a pantry entry written any of
+     * those ways still matches a recipe.
      */
     public static String normalizeIngredientName(String rawName) {
         if (rawName == null) {
             return "";
         }
-        String name = rawName.trim().toLowerCase();
+        // Apostrophes are kept ("ouma's"); anything else that isn't a letter or digit becomes a space
+        String name = rawName.toLowerCase().replaceAll("[^a-z0-9']+", " ").trim();
+        String singular = singularise(name);
+        String alias = NAME_ALIASES.get(singular);
+        return alias != null ? alias : singular;
+    }
+
+    /** Singularises the last word, which is the one that carries the plural in English. */
+    private static String singularise(String name) {
         if (name.endsWith("ies") && name.length() > 4) {
             // berries -> berry (but "pies" falls through to the plain -s rule below)
             return name.substring(0, name.length() - 3) + "y";
@@ -102,6 +157,11 @@ public final class RecipeMatcher {
             return name.substring(0, name.length() - 1);
         }
         return name;
+    }
+
+    /** True for things like tap water that a recipe can always assume are there. */
+    public static boolean isAlwaysAvailable(String ingredientName) {
+        return ALWAYS_AVAILABLE.contains(normalizeIngredientName(ingredientName));
     }
 
     /**
@@ -245,11 +305,24 @@ public final class RecipeMatcher {
      * one another, and so are entries in different units of the same kind (500 g + 1 kg).
      */
     public static Map<String, Double> buildPantryQuantityMap(List<PantryItem> stock) {
+        return buildPantryQuantityMap(stock, Long.MIN_VALUE);
+    }
+
+    /**
+     * Like {@link #buildPantryQuantityMap(List)}, but leaves out anything that expired before
+     * {@code todayEpochDay}: food past its date can't be cooked with, so it mustn't make a
+     * recipe look ready. Something expiring today still counts.
+     */
+    public static Map<String, Double> buildPantryQuantityMap(List<PantryItem> stock, long todayEpochDay) {
         Map<String, Double> onHandByKey = new HashMap<>();
         if (stock == null) {
             return onHandByKey;
         }
         for (PantryItem stockedItem : stock) {
+            Long expiry = stockedItem.getExpiryDate();
+            if (expiry != null && expiry < todayEpochDay) {
+                continue;
+            }
             String key = stockKey(stockedItem.getName(), stockedItem.getUnit());
             double baseQuantity = toBaseQuantity(stockedItem.getQuantity(), stockedItem.getUnit());
             onHandByKey.merge(key, baseQuantity, Double::sum);
@@ -263,10 +336,15 @@ public final class RecipeMatcher {
      * @return true only if every single ingredient clears its required quantity
      */
     public static boolean canMakeRecipe(List<RecipeIngredient> requiredIngredients, Map<String, Double> onHandByKey) {
-        if (requiredIngredients == null || requiredIngredients.isEmpty()) {
+        if (requiredIngredients == null) {
             return false;
         }
-        for (RecipeIngredient needed : requiredIngredients) {
+        List<RecipeIngredient> needs = requirements(requiredIngredients);
+        if (needs.isEmpty()) {
+            // Nothing (or only tap water) to take from the pantry: not a pantry recipe
+            return false;
+        }
+        for (RecipeIngredient needed : needs) {
             if (missingQuantity(needed, onHandByKey) > 0) {
                 return false;
             }
@@ -274,9 +352,44 @@ public final class RecipeMatcher {
         return true;
     }
 
+    /**
+     * What a recipe actually needs from the pantry: tap water dropped, and lines for the same
+     * ingredient in the same kind of measure added together (a recipe using 1 onion in the
+     * sauce and 1 in the salad needs 2), expressed in the unit of the first such line.
+     */
+    static List<RecipeIngredient> requirements(List<RecipeIngredient> ingredients) {
+        Map<String, RecipeIngredient> merged = new LinkedHashMap<>();
+        for (RecipeIngredient line : ingredients) {
+            if (isAlwaysAvailable(line.getIngredientName())) {
+                continue;
+            }
+            String key = stockKey(line.getIngredientName(), line.getUnit());
+            RecipeIngredient earlier = merged.get(key);
+            if (earlier == null) {
+                merged.put(key, line);
+                continue;
+            }
+            double earlierUnitSize = toBaseQuantity(1, earlier.getUnit());
+            double combined = earlier.getRequiredQuantity()
+                    + toBaseQuantity(line.getRequiredQuantity(), line.getUnit()) / earlierUnitSize;
+            merged.put(key, new RecipeIngredient(earlier.getId(), earlier.getRecipeId(),
+                    earlier.getIngredientName(), combined, earlier.getUnit()));
+        }
+        return new ArrayList<>(merged.values());
+    }
+
+    /**
+     * True when the pantry holds some of this ingredient, even if not enough, so the recipe
+     * screen can say "Not enough" instead of "Missing".
+     */
+    public static boolean hasSome(RecipeIngredient needed, Map<String, Double> onHandByKey) {
+        Double available = availableInRecipeBase(needed, onHandByKey);
+        return available != null && available > QUANTITY_TOLERANCE;
+    }
+
     /** True when the pantry holds at least the required amount of this one ingredient. */
     public static boolean isInStock(RecipeIngredient needed, Map<String, Double> onHandByKey) {
-        return missingQuantity(needed, onHandByKey) <= 0;
+        return isAlwaysAvailable(needed.getIngredientName()) || missingQuantity(needed, onHandByKey) <= 0;
     }
 
     /**
@@ -350,6 +463,21 @@ public final class RecipeMatcher {
      * one ingredient missing entirely, qualifies; two or more shortfalls do not.
      */
     public static List<AlmostThereRecipe> getAlmostThereRecipes(List<RecipeWithIngredients> catalogue, Map<String, Double> onHandByKey) {
+        return getAlmostThereRecipes(catalogue, onHandByKey, onHandByKey);
+    }
+
+    /**
+     * Like {@link #getAlmostThereRecipes(List, Map)}, judged on usable stock, but also notes
+     * when the one shortfall is only there because the pantry's supply has expired, so the
+     * card can say "Expired: milk" rather than "Missing: milk".
+     *
+     * @param usableStock stock that hasn't expired, from {@link #buildPantryQuantityMap(List, long)}
+     * @param allStock    everything on the shelf, expired included
+     */
+    public static List<AlmostThereRecipe> getAlmostThereRecipes(List<RecipeWithIngredients> catalogue,
+                                                                Map<String, Double> usableStock,
+                                                                Map<String, Double> allStock) {
+        Map<String, Double> onHandByKey = usableStock;
         List<AlmostThereRecipe> oneShort = new ArrayList<>();
         if (catalogue == null) {
             return oneShort;
@@ -362,7 +490,7 @@ public final class RecipeMatcher {
             RecipeIngredient onlyShortfall = null;
             double onlyMissingQuantity = 0;
             int shortfalls = 0;
-            for (RecipeIngredient needed : ingredients) {
+            for (RecipeIngredient needed : requirements(ingredients)) {
                 double missing = missingQuantity(needed, onHandByKey);
                 if (missing > 0) {
                     shortfalls++;
@@ -374,7 +502,8 @@ public final class RecipeMatcher {
                 }
             }
             if (shortfalls == 1) {
-                oneShort.add(new AlmostThereRecipe(candidate, onlyShortfall, onlyMissingQuantity));
+                boolean onlyExpired = missingQuantity(onlyShortfall, allStock) <= 0;
+                oneShort.add(new AlmostThereRecipe(candidate, onlyShortfall, onlyMissingQuantity, onlyExpired));
             }
         }
         return oneShort;
@@ -386,11 +515,23 @@ public final class RecipeMatcher {
         private final RecipeWithIngredients recipe;
         private final RecipeIngredient missingIngredient;
         private final double missingQuantity;
+        private final boolean onlyExpired;
 
         public AlmostThereRecipe(RecipeWithIngredients recipe, RecipeIngredient missingIngredient, double missingQuantity) {
+            this(recipe, missingIngredient, missingQuantity, false);
+        }
+
+        public AlmostThereRecipe(RecipeWithIngredients recipe, RecipeIngredient missingIngredient,
+                                 double missingQuantity, boolean onlyExpired) {
             this.recipe = recipe;
             this.missingIngredient = missingIngredient;
             this.missingQuantity = missingQuantity;
+            this.onlyExpired = onlyExpired;
+        }
+
+        /** True when there's enough of the ingredient on the shelf, but it has expired. */
+        public boolean isOnlyExpired() {
+            return onlyExpired;
         }
 
         public RecipeWithIngredients getRecipe() {

@@ -325,6 +325,137 @@ public class RecipeMatcherTest {
         assertFalse(RecipeMatcher.isInStock(ingredient("Milk", 250, "ml"), stock));
     }
 
+    @Test
+    public void normalizeIngredientName_ignoresPunctuationAndSpacing() {
+        assertEquals("curry powder", RecipeMatcher.normalizeIngredientName("  Curry   Powder, "));
+        assertEquals("green pepper", RecipeMatcher.normalizeIngredientName("green-peppers"));
+    }
+
+    @Test
+    public void normalizeIngredientName_mapsSouthAfricanAlternativeNames() {
+        assertEquals("maize meal", RecipeMatcher.normalizeIngredientName("Mielie-meal"));
+        assertEquals("maize meal", RecipeMatcher.normalizeIngredientName("mealie meal"));
+        assertEquals("flour", RecipeMatcher.normalizeIngredientName("Cake flour"));
+        assertEquals("beef mince", RecipeMatcher.normalizeIngredientName("mince"));
+        assertEquals("egg", RecipeMatcher.normalizeIngredientName("free range eggs"));
+    }
+
+    @Test
+    public void normalizeIngredientName_doesNotLooselyMatchRelatedIngredients() {
+        // Chicken stock is not chicken, and beef stock is not beef
+        assertEquals("chicken stock", RecipeMatcher.normalizeIngredientName("chicken stock"));
+        assertFalse(RecipeMatcher.canMakeRecipe(Arrays.asList(ingredient("Beef", 500, "g")),
+                pantry(pantryItem("beef stock", 1, "L"))));
+    }
+
+    @Test
+    public void canMakeRecipe_matchesAlternativeNameInPantry() {
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Maize meal", 250, "g"));
+
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("Mielie meal", 2.5, "kg"))));
+    }
+
+    @Test
+    public void canMakeRecipe_neverWaitsOnWater() {
+        List<RecipeIngredient> ingredients = Arrays.asList(
+                ingredient("Maize meal", 250, "g"),
+                ingredient("Water", 750, "ml"));
+
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("maize meal", 1, "kg"))));
+        assertTrue(RecipeMatcher.isInStock(ingredient("Water", 1, "L"), pantry()));
+    }
+
+    @Test
+    public void canMakeRecipe_recipeOfOnlyWaterIsNotCookable() {
+        // Nothing is needed from the pantry, so there's nothing to suggest cooking
+        assertFalse(RecipeMatcher.canMakeRecipe(Arrays.asList(ingredient("Water", 1, "L")), pantry()));
+    }
+
+    @Test
+    public void canMakeRecipe_addsUpAnIngredientListedTwice() {
+        List<RecipeIngredient> ingredients = Arrays.asList(
+                ingredient("Onion", 1, "unit"),
+                ingredient("Carrot", 2, "unit"),
+                ingredient("Onion", 1, "unit"));
+
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients,
+                pantry(pantryItem("onion", 1, "unit"), pantryItem("carrot", 2, "unit"))));
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients,
+                pantry(pantryItem("onions", 2, "unit"), pantryItem("carrots", 2, "unit"))));
+    }
+
+    @Test
+    public void canMakeRecipe_addsUpRepeatedLinesInDifferentUnits() {
+        List<RecipeIngredient> ingredients = Arrays.asList(
+                ingredient("Sugar", 100, "g"),
+                ingredient("Sugar", 0.2, "kg"));
+
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("sugar", 250, "g"))));
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("sugar", 300, "g"))));
+    }
+
+    @Test
+    public void buildPantryQuantityMap_leavesOutExpiredStock() {
+        long today = 20_000L;
+        List<PantryItem> items = Arrays.asList(
+                new PantryItem(1L, "Milk", 1, "L", today - 1),
+                new PantryItem(2L, "Cream", 250, "ml", today),
+                new PantryItem(3L, "Butter", 250, "g", null));
+
+        Map<String, Double> usable = RecipeMatcher.buildPantryQuantityMap(items, today);
+
+        assertFalse(RecipeMatcher.canMakeRecipe(Arrays.asList(ingredient("Milk", 250, "ml")), usable));
+        assertTrue(RecipeMatcher.canMakeRecipe(Arrays.asList(ingredient("Cream", 250, "ml")), usable));
+        assertTrue(RecipeMatcher.canMakeRecipe(Arrays.asList(ingredient("Butter", 50, "g")), usable));
+        // Without a date to compare against, everything counts
+        assertTrue(RecipeMatcher.canMakeRecipe(Arrays.asList(ingredient("Milk", 250, "ml")),
+                RecipeMatcher.buildPantryQuantityMap(items)));
+    }
+
+    @Test
+    public void getAlmostThereRecipes_reportsCombinedShortfallForRepeatedIngredient() {
+        RecipeWithIngredients recipe = recipeWith(1L, "Twice onion",
+                ingredient("Onion", 1, "unit"),
+                ingredient("Onion", 1, "unit"),
+                ingredient("Carrot", 1, "unit"));
+
+        List<RecipeMatcher.AlmostThereRecipe> almost = RecipeMatcher.getAlmostThereRecipes(
+                Arrays.asList(recipe), pantry(pantryItem("onion", 1, "unit"), pantryItem("carrot", 1, "unit")));
+
+        assertEquals(1, almost.size());
+        assertEquals(1.0, almost.get(0).getMissingQuantity(), 0.0001);
+        assertFalse(almost.get(0).isMissingEntirely());
+    }
+
+    @Test
+    public void hasSome_tellsNotEnoughApartFromMissing() {
+        Map<String, Double> stock = pantry(pantryItem("butternut", 800, "g"));
+
+        assertTrue(RecipeMatcher.hasSome(ingredient("Butternut", 1, "kg"), stock));
+        assertFalse(RecipeMatcher.isInStock(ingredient("Butternut", 1, "kg"), stock));
+        assertFalse(RecipeMatcher.hasSome(ingredient("Pumpkin", 500, "g"), stock));
+    }
+
+    @Test
+    public void getAlmostThereRecipes_notesWhenTheShortfallIsOnlyExpiredStock() {
+        long today = 20_000L;
+        RecipeWithIngredients melktert = recipeWith(1L, "Melktert",
+                ingredient("Milk", 1, "L"),
+                ingredient("Egg", 3, "unit"));
+        List<PantryItem> items = Arrays.asList(
+                new PantryItem(1L, "Milk", 1, "L", today - 2),
+                new PantryItem(2L, "Eggs", 6, "unit", null));
+
+        List<RecipeMatcher.AlmostThereRecipe> almost = RecipeMatcher.getAlmostThereRecipes(
+                Arrays.asList(melktert),
+                RecipeMatcher.buildPantryQuantityMap(items, today),
+                RecipeMatcher.buildPantryQuantityMap(items));
+
+        assertEquals(1, almost.size());
+        assertEquals("Milk", almost.get(0).getMissingIngredient().getIngredientName());
+        assertTrue(almost.get(0).isOnlyExpired());
+    }
+
     private static Map<String, Double> pantry(PantryItem... items) {
         return RecipeMatcher.buildPantryQuantityMap(Arrays.asList(items));
     }

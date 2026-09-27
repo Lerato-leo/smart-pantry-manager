@@ -45,7 +45,8 @@ public class AlmostThereAdapter extends ListAdapter<AlmostThereRecipe, AlmostThe
                 public boolean areContentsTheSame(@NonNull AlmostThereRecipe oldItem, @NonNull AlmostThereRecipe newItem) {
                     // The missing line changes as stock changes, even when the recipe doesn't.
                     return oldItem.getMissingIngredient().getId() == newItem.getMissingIngredient().getId()
-                            && oldItem.getMissingQuantity() == newItem.getMissingQuantity();
+                            && oldItem.getMissingQuantity() == newItem.getMissingQuantity()
+                            && oldItem.isOnlyExpired() == newItem.isOnlyExpired();
                 }
             };
 
@@ -85,7 +86,9 @@ public class AlmostThereAdapter extends ListAdapter<AlmostThereRecipe, AlmostThe
             tvName.setText(recipe.getName());
 
             String name = missing.getIngredientName().toLowerCase();
-            if (almostThere.isMissingEntirely()) {
+            if (almostThere.isOnlyExpired()) {
+                tvMissing.setText(itemView.getContext().getString(R.string.format_expired_ingredient, name));
+            } else if (almostThere.isMissingEntirely()) {
                 tvMissing.setText(itemView.getContext().getString(R.string.format_missing_ingredient, name));
             } else {
                 UnitSystem.Amount shortfall = UnitSystem.forDisplay(almostThere.getMissingQuantity(), missing.getUnit(), imperial);

@@ -21,6 +21,7 @@ import za.ac.richfield.dijong.data.AppSettings;
 import za.ac.richfield.dijong.data.RecipeWithIngredients;
 import za.ac.richfield.dijong.data.entity.RecipeIngredient;
 import za.ac.richfield.dijong.ui.recipes.RecipeDetailViewModel;
+import za.ac.richfield.dijong.util.ExpiryDateConverter;
 import za.ac.richfield.dijong.util.QuantityFormatter;
 import za.ac.richfield.dijong.util.RecipeMatcher;
 import za.ac.richfield.dijong.util.RecipeSteps;
@@ -43,7 +44,10 @@ public class RecipeDetailActivity extends AppCompatActivity {
     private LinearLayout stepsContainer;
 
     private RecipeWithIngredients recipe;
-    private Map<String, Double> pantryStock;
+    /** Stock that can be cooked with: nothing past its expiry date. */
+    private Map<String, Double> usableStock;
+    /** Everything on the shelf, expired or not, to tell "expired" apart from "missing". */
+    private Map<String, Double> allStock;
     private boolean imperial;
 
     @Override
@@ -77,15 +81,16 @@ public class RecipeDetailActivity extends AppCompatActivity {
             recipe = loaded;
             render();
         });
-        viewModel.getPantryStock().observe(this, stock -> {
-            pantryStock = stock;
+        viewModel.getPantryItems().observe(this, items -> {
+            usableStock = RecipeMatcher.buildPantryQuantityMap(items, ExpiryDateConverter.todayEpochDay());
+            allStock = RecipeMatcher.buildPantryQuantityMap(items);
             render();
         });
     }
 
     /** Draws the screen once both the recipe and the pantry totals have arrived. */
     private void render() {
-        if (recipe == null || pantryStock == null) {
+        if (recipe == null || usableStock == null) {
             return;
         }
         List<RecipeIngredient> ingredients = recipe.getIngredients();
@@ -97,7 +102,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         int missingCount = 0;
         LayoutInflater inflater = LayoutInflater.from(this);
         for (RecipeIngredient ingredient : ingredients) {
-            boolean inStock = RecipeMatcher.isInStock(ingredient, pantryStock);
+            boolean inStock = RecipeMatcher.isInStock(ingredient, usableStock);
             if (!inStock) {
                 missingCount++;
             }
@@ -129,7 +134,17 @@ public class RecipeDetailActivity extends AppCompatActivity {
             statusIcon.getLayoutParams().width = statusIcon.getLayoutParams().height =
                     getResources().getDimensionPixelSize(R.dimen.missing_icon_size);
             statusCircle.setContentDescription(getString(R.string.content_desc_not_in_pantry));
-            row.findViewById(R.id.tv_missing_pill).setVisibility(View.VISIBLE);
+            // Say why it isn't ticked: enough on the shelf but past its date is "Expired",
+            // some but too little is "Not enough", and none at all is "Missing"
+            TextView pill = row.findViewById(R.id.tv_missing_pill);
+            pill.setVisibility(View.VISIBLE);
+            if (RecipeMatcher.isInStock(ingredient, allStock)) {
+                pill.setText(R.string.expired);
+                pill.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.overdue)));
+                pill.setTextColor(ContextCompat.getColor(this, R.color.white));
+            } else if (RecipeMatcher.hasSome(ingredient, usableStock)) {
+                pill.setText(R.string.not_enough);
+            }
         }
         ((TextView) row.findViewById(R.id.tv_ingredient_name)).setText(capitalise(ingredient.getIngredientName()));
         UnitSystem.Amount amount = UnitSystem.forDisplay(ingredient.getRequiredQuantity(), ingredient.getUnit(), imperial);

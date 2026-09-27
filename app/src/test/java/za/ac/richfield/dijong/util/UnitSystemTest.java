@@ -40,4 +40,17 @@ public class UnitSystemTest {
         assertEquals("cup", UnitSystem.forDisplay(1, "cup", true).unit);
         assertEquals("can", UnitSystem.forDisplay(1, "can", true).unit);
     }
+
+    @Test
+    public void metric_showsSmallKilogramsAndLitresInGramsAndMillilitres() {
+        UnitSystem.Amount grams = UnitSystem.forDisplay(0.2, "kg", false);
+        assertEquals(200, grams.quantity, 0.0001);
+        assertEquals("g", grams.unit);
+
+        UnitSystem.Amount millilitres = UnitSystem.forDisplay(0.25, "L", false);
+        assertEquals(250, millilitres.quantity, 0.0001);
+        assertEquals("ml", millilitres.unit);
+
+        assertEquals("kg", UnitSystem.forDisplay(1.5, "kg", false).unit);
+    }
 }

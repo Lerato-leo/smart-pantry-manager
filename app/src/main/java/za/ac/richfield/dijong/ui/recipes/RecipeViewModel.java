@@ -16,6 +16,7 @@ import za.ac.richfield.dijong.data.PantryRepository;
 import za.ac.richfield.dijong.data.RecipeRepository;
 import za.ac.richfield.dijong.data.RecipeWithIngredients;
 import za.ac.richfield.dijong.data.entity.PantryItem;
+import za.ac.richfield.dijong.util.ExpiryDateConverter;
 import za.ac.richfield.dijong.util.RecipeMatcher;
 import za.ac.richfield.dijong.util.RecipeMatcher.AlmostThereRecipe;
 
@@ -50,8 +51,11 @@ public class RecipeViewModel extends AndroidViewModel {
 
     private void recompute() {
         pantryItemCount.setValue(latestPantryItems.size());
-        Map<String, Double> pantryQuantities = RecipeMatcher.buildPantryQuantityMap(latestPantryItems);
-        almostThereRecipes.setValue(RecipeMatcher.getAlmostThereRecipes(latestRecipes, pantryQuantities));
+        // Only food that hasn't expired can make a recipe ready
+        Map<String, Double> pantryQuantities = RecipeMatcher.buildPantryQuantityMap(
+                latestPantryItems, ExpiryDateConverter.todayEpochDay());
+        Map<String, Double> allQuantities = RecipeMatcher.buildPantryQuantityMap(latestPantryItems);
+        almostThereRecipes.setValue(RecipeMatcher.getAlmostThereRecipes(latestRecipes, pantryQuantities, allQuantities));
         matchingRecipes.setValue(RecipeMatcher.getMatchingRecipes(latestRecipes, pantryQuantities));
     }
 

@@ -52,6 +52,7 @@
     <string name="heading_prep_steps">Method</string>
     <string name="title_recipe">Recipe</string>
     <string name="missing">Missing</string>
+    <string name="not_enough">Not enough</string>
     <string name="content_desc_in_pantry">In your pantry</string>
     <string name="content_desc_not_in_pantry">Not in your pantry</string>
 
@@ -66,6 +67,7 @@
     <string name="you_have_everything">You have everything</string>
     <string name="button_add_ingredients">Add ingredients</string>
     <string name="format_missing_ingredient">Missing: %1$s</string>
+    <string name="format_expired_ingredient">Expired: %1$s</string>
     <string name="format_need_more_ingredient">Need %1$s more %2$s</string>
 
     <!-- SettingsFragment -->
