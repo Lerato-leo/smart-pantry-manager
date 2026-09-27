@@ -1,52 +1,90 @@
 package za.ac.richfield.dijong;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
+import za.ac.richfield.dijong.data.AppSettings;
+import za.ac.richfield.dijong.data.IngredientCategory;
 import za.ac.richfield.dijong.data.entity.PantryItem;
+import za.ac.richfield.dijong.ui.ExpiryBadge;
 import za.ac.richfield.dijong.ui.pantry.PantryViewModel;
 import za.ac.richfield.dijong.util.ExpiryDateConverter;
+import za.ac.richfield.dijong.util.ExpiryStatus;
 import za.ac.richfield.dijong.util.QuantityFormatter;
 
 /**
  * Activity for adding or editing a pantry item. Reads and writes go straight through
  * {@link PantryViewModel}; the caller only needs to pass {@link #EXTRA_ITEM_ID} for edits.
+ *
+ * <p>It finishes with one of the {@code RESULT_*} codes below so the pantry list can confirm
+ * what happened in a snackbar, with Undo where that makes sense.
  */
 public class AddEditIngredientActivity extends AppCompatActivity {
 
     public static final String EXTRA_ITEM_ID = "extra_item_id";
+
+    /** A new item was saved; the result carries its id in {@link #EXTRA_ITEM_ID}. */
+    public static final int RESULT_ADDED = RESULT_FIRST_USER + 1;
+    /** An existing item was saved. */
+    public static final int RESULT_UPDATED = RESULT_FIRST_USER + 2;
+    /**
+     * The person tapped Delete. The pantry list does the delete itself, so it can offer Undo
+     * from the same place the item disappears.
+     */
+    public static final int RESULT_DELETE_REQUESTED = RESULT_FIRST_USER + 3;
+
     private static final long NO_ITEM_ID = -1;
     private static final String OTHER_UNIT_OPTION = "Other";
+    private static final List<String> IMPERIAL_UNITS = Arrays.asList("oz", "lb");
 
+    private TextInputLayout tilName;
     private EditText etName;
+    private TextInputLayout tilQuantity;
     private EditText etQuantity;
     private TextInputLayout tilUnit;
     private AutoCompleteTextView actvUnit;
     private TextInputLayout tilCustomUnit;
     private EditText etCustomUnit;
+    private TextInputLayout tilCategory;
+    private AutoCompleteTextView actvCategory;
+    private TextInputLayout tilExpiryDate;
     private EditText etExpiryDate;
+    private TextView tvExpiryBadge;
+    private MaterialButton btnSave;
 
     private PantryViewModel viewModel;
     private long itemId = NO_ITEM_ID;
     private boolean isEditing = false;
-    private List<String> knownUnits;
+    private boolean fieldsPopulated = false;
+    private List<String> unitOptions;
+    private IngredientCategory selectedCategory = IngredientCategory.OTHER;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +93,22 @@ public class AddEditIngredientActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(PantryViewModel.class);
 
+        tilName = findViewById(R.id.til_name);
         etName = findViewById(R.id.et_name);
+        tilQuantity = findViewById(R.id.til_quantity);
         etQuantity = findViewById(R.id.et_quantity);
         tilUnit = findViewById(R.id.til_unit);
         actvUnit = findViewById(R.id.actv_unit);
         tilCustomUnit = findViewById(R.id.til_custom_unit);
         etCustomUnit = findViewById(R.id.et_custom_unit);
+        tilCategory = findViewById(R.id.til_category);
+        actvCategory = findViewById(R.id.actv_category);
+        tilExpiryDate = findViewById(R.id.til_expiry_date);
         etExpiryDate = findViewById(R.id.et_expiry_date);
-        MaterialButton btnPickDate = findViewById(R.id.btn_pick_date);
-        MaterialButton btnSave = findViewById(R.id.btn_save);
+        tvExpiryBadge = findViewById(R.id.tv_expiry_badge);
+        btnSave = findViewById(R.id.btn_save);
         MaterialButton btnCancel = findViewById(R.id.btn_cancel);
-
-        setUpUnitDropdown();
+        MaterialButton btnDelete = findViewById(R.id.btn_delete);
 
         itemId = getIntent().getLongExtra(EXTRA_ITEM_ID, NO_ITEM_ID);
         isEditing = itemId != NO_ITEM_ID;
@@ -77,12 +119,22 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         setTitle(isEditing ? R.string.title_edit_ingredient : R.string.title_add_ingredient);
+
+        setUpUnitDropdown(null);
+        setUpCategoryDropdown();
+        showCategory(IngredientCategory.OTHER);
+        clearErrorWhenEdited(etName, tilName);
+        clearErrorWhenEdited(etQuantity, tilQuantity);
+        etExpiryDate.addTextChangedListener(new SimpleTextWatcher(this::onExpiryTextChanged));
+        tilExpiryDate.setEndIconOnClickListener(v -> showDatePickerDialog());
+
         if (isEditing) {
+            btnDelete.setVisibility(View.VISIBLE);
+            btnDelete.setOnClickListener(v -> requestDelete());
             viewModel.selectItem(itemId);
             viewModel.getSelectedItem().observe(this, this::populateFields);
         }
 
-        btnPickDate.setOnClickListener(v -> showDatePickerDialog());
         btnSave.setOnClickListener(v -> saveItem());
         btnCancel.setOnClickListener(v -> finish());
     }
@@ -93,37 +145,85 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         return true;
     }
 
-    private void setUpUnitDropdown() {
-        String[] units = getResources().getStringArray(R.array.ingredient_units);
-        knownUnits = Arrays.asList(units);
-        actvUnit.setAdapter(new ArrayAdapter<>(this, R.layout.item_unit_dropdown, units));
+    /**
+     * Metric units always; oz and lb only with "Include imperial" on in Settings, or when the
+     * item being edited already uses one, so editing never silently changes its unit.
+     */
+    private void setUpUnitDropdown(String unitBeingEdited) {
+        boolean includeImperial = new AppSettings(this).isImperialUnitsEnabled()
+                || IMPERIAL_UNITS.contains(unitBeingEdited);
+        unitOptions = new ArrayList<>();
+        for (String unit : getResources().getStringArray(R.array.ingredient_units)) {
+            if (includeImperial || !IMPERIAL_UNITS.contains(unit)) {
+                unitOptions.add(unit);
+            }
+        }
+        actvUnit.setAdapter(new ArrayAdapter<>(this, R.layout.item_unit_dropdown, unitOptions));
         // This is a fixed-choice dropdown, not free-text autocomplete: disabling the key
         // listener stops ArrayAdapter's built-in filtering from narrowing the list down to
         // whatever was previously selected every time the menu is reopened.
         actvUnit.setKeyListener(null);
-        actvUnit.setOnItemClickListener((parent, view, position, id) ->
-                setCustomUnitVisible(OTHER_UNIT_OPTION.equals(units[position])));
+        actvUnit.setOnItemClickListener((parent, view, position, id) -> {
+            clearError(tilUnit);
+            setCustomUnitVisible(OTHER_UNIT_OPTION.equals(unitOptions.get(position)));
+        });
+    }
+
+    private void setUpCategoryDropdown() {
+        ArrayAdapter<IngredientCategory> adapter = new ArrayAdapter<IngredientCategory>(
+                this, R.layout.item_category_dropdown, IngredientCategory.values()) {
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                TextView row = (TextView) super.getView(position, convertView, parent);
+                IngredientCategory category = getItem(position);
+                row.setText(category.labelRes);
+                row.setCompoundDrawablesRelativeWithIntrinsicBounds(categoryDot(category), null, null, null);
+                return row;
+            }
+        };
+        actvCategory.setAdapter(adapter);
+        actvCategory.setKeyListener(null);
+        actvCategory.setOnItemClickListener((parent, view, position, id) ->
+                showCategory(IngredientCategory.values()[position]));
+    }
+
+    private void showCategory(IngredientCategory category) {
+        selectedCategory = category;
+        actvCategory.setText(getString(category.labelRes), false);
+        tilCategory.setStartIconTintList(ColorStateList.valueOf(
+                ContextCompat.getColor(this, category.foregroundColorRes)));
+    }
+
+    private Drawable categoryDot(IngredientCategory category) {
+        Drawable dot = DrawableCompat.wrap(
+                ContextCompat.getDrawable(this, R.drawable.shape_category_dot).mutate());
+        DrawableCompat.setTint(dot, ContextCompat.getColor(this, category.foregroundColorRes));
+        return dot;
     }
 
     private void setCustomUnitVisible(boolean visible) {
-        tilCustomUnit.setVisibility(visible ? android.view.View.VISIBLE : android.view.View.GONE);
+        tilCustomUnit.setVisibility(visible ? View.VISIBLE : View.GONE);
         if (!visible) {
             etCustomUnit.setText(null);
-            tilCustomUnit.setError(null);
+            clearError(tilCustomUnit);
         }
     }
 
     private void populateFields(PantryItem item) {
-        if (item == null) {
+        // Only once: LiveData re-emits after a save, and a rotation must not overwrite edits
+        if (item == null || fieldsPopulated) {
             return;
         }
+        fieldsPopulated = true;
         etName.setText(item.getName());
         etQuantity.setText(QuantityFormatter.format(item.getQuantity()));
         etExpiryDate.setText(ExpiryDateConverter.formatEpochDay(item.getExpiryDate()));
+        showCategory(item.getCategoryEnum());
 
         String unit = item.getUnit();
-        boolean isKnownUnit = unit != null && knownUnits.contains(unit);
-        if (isKnownUnit) {
+        setUpUnitDropdown(unit);
+        if (unit != null && unitOptions.contains(unit)) {
             actvUnit.setText(unit, false);
         } else {
             actvUnit.setText(OTHER_UNIT_OPTION, false);
@@ -132,17 +232,20 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         }
     }
 
-    private void showDatePickerDialog() {
-        final Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+    private void onExpiryTextChanged() {
+        clearError(tilExpiryDate);
+        Long epochDay = ExpiryDateConverter.parseToEpochDay(etExpiryDate.getText().toString());
+        ExpiryBadge.bind(tvExpiryBadge, ExpiryStatus.of(epochDay), true);
+    }
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                (view, yearSelected, monthOfYear, dayOfMonth) ->
-                        etExpiryDate.setText(LocalDate.of(yearSelected, monthOfYear + 1, dayOfMonth).toString()),
-                year, month, day);
-        datePickerDialog.show();
+    private void showDatePickerDialog() {
+        Long current = ExpiryDateConverter.parseToEpochDay(etExpiryDate.getText().toString());
+        LocalDate start = current != null ? LocalDate.ofEpochDay(current) : LocalDate.now();
+        new DatePickerDialog(this,
+                (view, year, monthOfYear, dayOfMonth) -> etExpiryDate.setText(ExpiryDateConverter.formatEpochDay(
+                        LocalDate.of(year, monthOfYear + 1, dayOfMonth).toEpochDay())),
+                start.getYear(), start.getMonthValue() - 1, start.getDayOfMonth())
+                .show();
     }
 
     /**
@@ -164,7 +267,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
     private void saveItem() {
         String name = etName.getText().toString().trim();
         if (TextUtils.isEmpty(name)) {
-            etName.setError(getString(R.string.error_name_required));
+            tilName.setError(getString(R.string.error_name_required));
             etName.requestFocus();
             return;
         }
@@ -177,7 +280,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
                 throw new NumberFormatException("Quantity must be positive");
             }
         } catch (NumberFormatException e) {
-            etQuantity.setError(getString(R.string.error_quantity_positive));
+            tilQuantity.setError(getString(R.string.error_quantity_positive));
             etQuantity.requestFocus();
             return;
         }
@@ -195,12 +298,12 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             }
             return;
         }
-        tilUnit.setError(null);
+        clearError(tilUnit);
 
         String expiryDateText = etExpiryDate.getText().toString().trim();
         Long expiryDate = ExpiryDateConverter.parseToEpochDay(expiryDateText);
         if (!ExpiryDateConverter.isBlank(expiryDateText) && expiryDate == null) {
-            etExpiryDate.setError(getString(R.string.error_invalid_date));
+            tilExpiryDate.setError(getString(R.string.error_invalid_date));
             etExpiryDate.requestFocus();
             return;
         }
@@ -210,15 +313,60 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         item.setQuantity(quantity);
         item.setUnit(unit);
         item.setExpiryDate(expiryDate);
+        item.setCategory(selectedCategory);
 
         if (isEditing) {
             item.setId(itemId);
             viewModel.update(item);
-            Toast.makeText(this, R.string.msg_ingredient_updated, Toast.LENGTH_SHORT).show();
+            setResult(RESULT_UPDATED);
+            finish();
         } else {
-            viewModel.insert(item);
-            Toast.makeText(this, R.string.msg_ingredient_added, Toast.LENGTH_SHORT).show();
+            // Wait for the new row's id so the pantry list can offer Undo on "Ingredient added"
+            btnSave.setEnabled(false);
+            viewModel.insert(item, newId -> {
+                setResult(RESULT_ADDED, new Intent().putExtra(EXTRA_ITEM_ID, newId));
+                finish();
+            });
         }
+    }
+
+    private void requestDelete() {
+        setResult(RESULT_DELETE_REQUESTED, new Intent().putExtra(EXTRA_ITEM_ID, itemId));
         finish();
+    }
+
+    private static void clearErrorWhenEdited(EditText field, TextInputLayout layout) {
+        field.addTextChangedListener(new SimpleTextWatcher(() -> clearError(layout)));
+    }
+
+    /**
+     * Clears the message and gives back the space it took. setError(null) alone leaves the
+     * error row reserved, which pushed the fields below down after a fix.
+     */
+    private static void clearError(TextInputLayout layout) {
+        layout.setError(null);
+        layout.setErrorEnabled(false);
+    }
+
+    /** A TextWatcher that only cares that the text changed, not how. */
+    private static final class SimpleTextWatcher implements TextWatcher {
+        private final Runnable onChanged;
+
+        SimpleTextWatcher(Runnable onChanged) {
+            this.onChanged = onChanged;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            onChanged.run();
+        }
     }
 }

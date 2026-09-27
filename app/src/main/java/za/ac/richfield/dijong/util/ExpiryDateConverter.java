@@ -5,23 +5,27 @@ import androidx.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 /**
  * Converts between the epoch-day {@code Long} used to store expiry dates and the
- * yyyy-MM-dd string shown in the UI.
+ * DD/MM/YYYY string shown in the UI.
  */
 public final class ExpiryDateConverter {
 
     /** Items expiring within this many days are flagged "soon" in the UI and in alerts. */
     public static final int EXPIRY_SOON_WINDOW_DAYS = 3;
 
-    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
+    // "uuuu" with STRICT resolving rejects impossible dates like 30/02/2026 instead of
+    // quietly rolling them over to 2 March.
+    private static final DateTimeFormatter DISPLAY_FORMAT =
+            DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(ResolverStyle.STRICT);
 
     private ExpiryDateConverter() {
     }
 
     /**
-     * @return the epoch day for a yyyy-MM-dd string, or null if the input is blank or not
+     * @return the epoch day for a DD/MM/YYYY string, or null if the input is blank or not
      * a valid date.
      */
     @Nullable

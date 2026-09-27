@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -34,7 +37,10 @@ public class PantryListFragment extends Fragment {
     private PantryViewModel viewModel;
     private PantryAdapter adapter;
     private View coordinator;
-    private FloatingActionButton fabAdd;
+
+    /** Opens the add/edit screen and reacts to how it finished (see its RESULT_ codes). */
+    private final ActivityResultLauncher<Intent> editorLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), this::onEditorResult);
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -51,7 +57,7 @@ public class PantryListFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.rv_pantry);
         View emptyState = view.findViewById(R.id.empty_state);
         coordinator = view.findViewById(R.id.pantry_coordinator);
-        fabAdd = view.findViewById(R.id.fab_add_ingredient);
+        FloatingActionButton fabAdd = view.findViewById(R.id.fab_add_ingredient);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new PantryAdapter(this::editItem, this::confirmDelete);
@@ -86,13 +92,32 @@ public class PantryListFragment extends Fragment {
     }
 
     private void addItem() {
-        startActivity(new Intent(requireContext(), AddEditIngredientActivity.class));
+        editorLauncher.launch(new Intent(requireContext(), AddEditIngredientActivity.class));
     }
 
     private void editItem(PantryItem item) {
         Intent intent = new Intent(requireContext(), AddEditIngredientActivity.class);
         intent.putExtra(AddEditIngredientActivity.EXTRA_ITEM_ID, item.getId());
-        startActivity(intent);
+        editorLauncher.launch(intent);
+    }
+
+    private void onEditorResult(ActivityResult result) {
+        Intent data = result.getData();
+        long id = data != null ? data.getLongExtra(AddEditIngredientActivity.EXTRA_ITEM_ID, -1) : -1;
+        if (result.getResultCode() == AddEditIngredientActivity.RESULT_ADDED && id != -1) {
+            Snackbar.make(coordinator, R.string.msg_ingredient_added, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.action_undo, v -> viewModel.deleteById(id))
+                    .show();
+        } else if (result.getResultCode() == AddEditIngredientActivity.RESULT_UPDATED) {
+            Snackbar.make(coordinator, R.string.msg_ingredient_updated, Snackbar.LENGTH_SHORT).show();
+        } else if (result.getResultCode() == AddEditIngredientActivity.RESULT_DELETE_REQUESTED) {
+            for (PantryItem item : adapter.getCurrentList()) {
+                if (item.getId() == id) {
+                    deleteWithUndo(item);
+                    break;
+                }
+            }
+        }
     }
 
     /** The bin button asks first, since a stray tap shouldn't cost the user an ingredient. */
@@ -113,7 +138,6 @@ public class PantryListFragment extends Fragment {
         viewModel.delete(item);
         Snackbar.make(coordinator, getString(R.string.msg_ingredient_deleted, item.getName()),
                         Snackbar.LENGTH_LONG)
-                .setAnchorView(fabAdd)
                 .setAction(R.string.action_undo, v -> viewModel.insert(item))
                 .show();
     }

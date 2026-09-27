@@ -14,9 +14,9 @@
     <string name="hint_expiry_date">Expiry date (optional)</string>
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>
-    <string name="error_name_required">Ingredient name is required</string>
-    <string name="error_quantity_positive">Quantity must be a positive number</string>
-    <string name="error_invalid_date">Enter a valid date (yyyy-MM-dd)</string>
+    <string name="error_name_required">Enter an ingredient name</string>
+    <string name="error_quantity_positive">Enter a quantity above 0</string>
+    <string name="error_invalid_date">Enter a real date as DD/MM/YYYY</string>
     <string name="error_custom_unit_required">Enter a unit, or pick one from the list</string>
     <string name="error_unit_required">Choose a unit</string>
     <string name="msg_ingredient_updated">Ingredient updated</string>
@@ -28,6 +28,14 @@
     <string name="msg_ingredient_added">Ingredient added</string>
     <string name="format_expires_on">Expires %s</string>
     <string name="content_desc_pick_date">Pick expiry date</string>
+    <string name="placeholder_quantity">e.g. 800</string>
+    <string name="placeholder_date">DD/MM/YYYY</string>
+    <string name="button_delete_ingredient">Delete ingredient</string>
+    <string name="expires_today">Expires today</string>
+    <string name="expires_tomorrow">Expires tomorrow</string>
+    <string name="expired">Expired</string>
+    <string name="badge_today">Today</string>
+    <string name="badge_tomorrow">Tomorrow</string>
     <string name="empty_pantry_title">Your pantry is empty</string>
     <string name="empty_pantry_message">Tap + to add your first ingredient and start tracking what you have.</string>
 

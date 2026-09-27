@@ -90,6 +90,12 @@
         <item name="android:letterSpacing">0</item>
     </style>
 
+    <!-- Expiry and "missing" badges: bolder than chips so they read as warnings -->
+    <style name="TextAppearance.Dijong.Badge" parent="TextAppearance.Dijong.Pill">
+        <item name="fontFamily">@font/poppins_semibold</item>
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+    </style>
+
     <!-- Uppercase section labels on the settings screen -->
     <style name="TextAppearance.Dijong.Overline" parent="TextAppearance.Material3.LabelLarge">
         <item name="fontFamily">@font/poppins_semibold</item>

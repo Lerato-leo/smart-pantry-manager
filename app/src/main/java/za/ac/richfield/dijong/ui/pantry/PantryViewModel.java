@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import za.ac.richfield.dijong.data.PantryRepository;
 import za.ac.richfield.dijong.data.entity.PantryItem;
@@ -51,11 +52,19 @@ public class PantryViewModel extends AndroidViewModel {
         repository.insert(item);
     }
 
+    public void insert(PantryItem item, Consumer<Long> onInserted) {
+        repository.insert(item, onInserted);
+    }
+
     public void update(PantryItem item) {
         repository.update(item);
     }
 
     public void delete(PantryItem item) {
         repository.delete(item);
+    }
+
+    public void deleteById(long id) {
+        repository.deleteById(id);
     }
 }

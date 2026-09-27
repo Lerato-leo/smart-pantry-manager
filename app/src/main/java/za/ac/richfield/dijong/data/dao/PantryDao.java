@@ -32,4 +32,7 @@ public interface PantryDao {
 
     @Delete
     int delete(PantryItem item);
+
+    @Query("DELETE FROM pantry_items WHERE id = :id")
+    int deleteById(long id);
 }
