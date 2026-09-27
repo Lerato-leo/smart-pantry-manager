@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +14,9 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import za.ac.richfield.spens.AddEditIngredientActivity;
 import za.ac.richfield.spens.R;
@@ -23,7 +24,8 @@ import za.ac.richfield.spens.data.entity.PantryItem;
 
 /**
  * Fragment that displays the list of pantry items.
- * Allows adding, editing, and deleting items. All reads/writes go through
+ * Tapping a card edits it; the bin button deletes after a confirmation, and swiping a card
+ * away deletes it straight away with an Undo on the snackbar. All reads/writes go through
  * {@link PantryViewModel}, which keeps this list live-updated whenever the
  * database changes (e.g. after saving in {@link AddEditIngredientActivity}).
  */
@@ -31,6 +33,8 @@ public class PantryListFragment extends Fragment {
 
     private PantryViewModel viewModel;
     private PantryAdapter adapter;
+    private View coordinator;
+    private FloatingActionButton fabAdd;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -46,10 +50,11 @@ public class PantryListFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.rv_pantry);
         View emptyState = view.findViewById(R.id.empty_state);
-        FloatingActionButton fabAdd = view.findViewById(R.id.fab_add_ingredient);
+        coordinator = view.findViewById(R.id.pantry_coordinator);
+        fabAdd = view.findViewById(R.id.fab_add_ingredient);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new PantryAdapter(this::editItem, this::deleteItem);
+        adapter = new PantryAdapter(this::editItem, this::confirmDelete);
         recyclerView.setAdapter(adapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
@@ -63,7 +68,9 @@ public class PantryListFragment extends Fragment {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
-                deleteItem(adapter.getCurrentList().get(position));
+                if (position != RecyclerView.NO_POSITION) {
+                    deleteWithUndo(adapter.getCurrentList().get(position));
+                }
             }
         });
         itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -88,8 +95,26 @@ public class PantryListFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void deleteItem(PantryItem item) {
+    /** The bin button asks first, since a stray tap shouldn't cost the user an ingredient. */
+    private void confirmDelete(PantryItem item) {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.dialog_delete_title, item.getName()))
+                .setMessage(R.string.dialog_delete_message)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.delete, (dialog, which) -> deleteWithUndo(item))
+                .show();
+    }
+
+    /**
+     * Deletes immediately and offers Undo. Undo re-inserts the same object, id included, so
+     * the restored row is identical to the one that was removed.
+     */
+    private void deleteWithUndo(PantryItem item) {
         viewModel.delete(item);
-        Toast.makeText(requireContext(), R.string.msg_ingredient_deleted, Toast.LENGTH_SHORT).show();
+        Snackbar.make(coordinator, getString(R.string.msg_ingredient_deleted, item.getName()),
+                        Snackbar.LENGTH_LONG)
+                .setAnchorView(fabAdd)
+                .setAction(R.string.action_undo, v -> viewModel.insert(item))
+                .show();
     }
 }

@@ -18,7 +18,11 @@
     <string name="error_custom_unit_required">Enter a unit, or pick one from the list</string>
     <string name="error_unit_required">Choose a unit</string>
     <string name="msg_ingredient_updated">Ingredient updated</string>
-    <string name="msg_ingredient_deleted">Ingredient deleted</string>
+    <string name="msg_ingredient_deleted">%s deleted</string>
+    <string name="action_undo">Undo</string>
+    <string name="dialog_delete_title">Delete %s?</string>
+    <string name="dialog_delete_message">This removes it from your spens. Recipes that need it will stop being suggested.</string>
+    <string name="content_desc_delete_item">Delete %s</string>
     <string name="msg_ingredient_added">Ingredient added</string>
     <string name="format_expires_on">Expires %s</string>
     <string name="content_desc_pick_date">Pick expiry date</string>

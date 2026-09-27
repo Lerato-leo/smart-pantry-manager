@@ -4,6 +4,7 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,20 +26,20 @@ import za.ac.richfield.spens.util.QuantityFormatter;
 public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.PantryViewHolder> {
 
     private final OnItemClickListener clickListener;
-    private final OnItemLongClickListener longClickListener;
+    private final OnDeleteClickListener deleteClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(PantryItem item);
     }
 
-    public interface OnItemLongClickListener {
-        void onItemLongClick(PantryItem item);
+    public interface OnDeleteClickListener {
+        void onDeleteClick(PantryItem item);
     }
 
-    public PantryAdapter(OnItemClickListener clickListener, OnItemLongClickListener longClickListener) {
+    public PantryAdapter(OnItemClickListener clickListener, OnDeleteClickListener deleteClickListener) {
         super(DIFF_CALLBACK);
         this.clickListener = clickListener;
-        this.longClickListener = longClickListener;
+        this.deleteClickListener = deleteClickListener;
     }
 
     private static final DiffUtil.ItemCallback<PantryItem> DIFF_CALLBACK = new DiffUtil.ItemCallback<PantryItem>() {
@@ -74,6 +75,7 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.PantryV
         private final TextView tvQuantityUnit;
         private final TextView tvExpiryDate;
         private final View statusDot;
+        private final ImageButton btnDelete;
 
         public PantryViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,6 +83,7 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.PantryV
             tvQuantityUnit = itemView.findViewById(R.id.tv_item_quantity_unit);
             tvExpiryDate = itemView.findViewById(R.id.tv_item_expiry_date);
             statusDot = itemView.findViewById(R.id.view_status_dot);
+            btnDelete = itemView.findViewById(R.id.btn_delete_item);
 
             itemView.setOnClickListener(v -> {
                 int pos = getBindingAdapterPosition();
@@ -89,18 +92,18 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.PantryV
                 }
             });
 
-            itemView.setOnLongClickListener(v -> {
+            btnDelete.setOnClickListener(v -> {
                 int pos = getBindingAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION && longClickListener != null) {
-                    longClickListener.onItemLongClick(getItem(pos));
-                    return true;
+                if (pos != RecyclerView.NO_POSITION && deleteClickListener != null) {
+                    deleteClickListener.onDeleteClick(getItem(pos));
                 }
-                return false;
             });
         }
 
         public void bind(PantryItem item) {
             tvName.setText(item.getName());
+            btnDelete.setContentDescription(itemView.getContext().getString(
+                    R.string.content_desc_delete_item, item.getName()));
             tvQuantityUnit.setText(QuantityFormatter.formatWithUnit(item.getQuantity(), item.getUnit()));
 
             Long expiryDate = item.getExpiryDate();

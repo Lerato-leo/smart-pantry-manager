@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/space_md"
+        android:paddingStart="@dimen/space_md"
+        android:paddingEnd="@dimen/space_xs"
         android:paddingVertical="@dimen/space_md">
 
         <View
@@ -53,6 +54,16 @@
                 android:textAppearance="?attr/textAppearanceBodySmall" />
 
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_delete_item"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="@dimen/space_sm"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/delete"
+            app:srcCompat="@drawable/ic_delete_24"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
     </LinearLayout>
 
