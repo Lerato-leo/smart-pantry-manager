@@ -29,9 +29,16 @@
         <item name="android:statusBarColor" tools:targetApi="l">@color/plum</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
 
-        <!-- Poppins everywhere by default; specific TextAppearances in type.xml refine per role. -->
-        <item name="android:fontFamily">@font/poppins_regular</item>
-        <item name="fontFamily">@font/poppins_regular</item>
+        <!-- Poppins everywhere by default, set as the default text appearance rather than
+             android:fontFamily: a theme-level fontFamily beats the fontFamily inside a
+             view's textAppearance, which flattened every heading to the regular weight. -->
+        <item name="android:textAppearance">@style/TextAppearance.Dijong.BodyMedium</item>
+        <item name="android:textAppearanceSmall">@style/TextAppearance.Dijong.BodySmall</item>
+        <item name="android:textAppearanceMedium">@style/TextAppearance.Dijong.BodyLarge</item>
+        <item name="android:textAppearanceLarge">@style/TextAppearance.Dijong.TitleLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Dijong.NavLabel</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Dijong.NavLabel</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Dijong.TitleMedium</item>
 
         <item name="textAppearanceHeadlineMedium">@style/TextAppearance.Dijong.HeadlineMedium</item>
         <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Dijong.HeadlineSmall</item>
