@@ -2,53 +2,53 @@
     <!-- Poppins across the app: SemiBold/Bold for anything a person scans, Regular/Medium
          for anything they read. Keeps the app feeling considered rather than default Material. -->
 
-    <style name="TextAppearance.Spens.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+    <style name="TextAppearance.Dijong.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
         <item name="fontFamily">@font/poppins_semibold</item>
         <item name="android:fontFamily">@font/poppins_semibold</item>
         <item name="android:letterSpacing">0</item>
     </style>
 
-    <style name="TextAppearance.Spens.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+    <style name="TextAppearance.Dijong.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
         <item name="fontFamily">@font/poppins_semibold</item>
         <item name="android:fontFamily">@font/poppins_semibold</item>
         <item name="android:letterSpacing">0</item>
     </style>
 
-    <style name="TextAppearance.Spens.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+    <style name="TextAppearance.Dijong.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
         <item name="fontFamily">@font/poppins_semibold</item>
         <item name="android:fontFamily">@font/poppins_semibold</item>
     </style>
 
-    <style name="TextAppearance.Spens.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+    <style name="TextAppearance.Dijong.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
         <item name="fontFamily">@font/poppins_medium</item>
         <item name="android:fontFamily">@font/poppins_medium</item>
     </style>
 
-    <style name="TextAppearance.Spens.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+    <style name="TextAppearance.Dijong.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
         <item name="fontFamily">@font/poppins_regular</item>
         <item name="android:fontFamily">@font/poppins_regular</item>
     </style>
 
-    <style name="TextAppearance.Spens.BodySmall" parent="TextAppearance.Material3.BodySmall">
+    <style name="TextAppearance.Dijong.BodySmall" parent="TextAppearance.Material3.BodySmall">
         <item name="fontFamily">@font/poppins_medium</item>
         <item name="android:fontFamily">@font/poppins_medium</item>
         <item name="android:letterSpacing">0.02</item>
     </style>
 
-    <style name="TextAppearance.Spens.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+    <style name="TextAppearance.Dijong.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
         <item name="fontFamily">@font/poppins_semibold</item>
         <item name="android:fontFamily">@font/poppins_semibold</item>
     </style>
 
     <!-- Toolbar text is sized explicitly: Poppins has tall line metrics, so the default
          toolbar sizes clipped the subtitle's descenders inside a 56dp bar. -->
-    <style name="TextAppearance.Spens.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+    <style name="TextAppearance.Dijong.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
         <item name="fontFamily">@font/poppins_semibold</item>
         <item name="android:fontFamily">@font/poppins_semibold</item>
         <item name="android:textSize">20sp</item>
     </style>
 
-    <style name="TextAppearance.Spens.ToolbarSubtitle" parent="TextAppearance.Material3.BodySmall">
+    <style name="TextAppearance.Dijong.ToolbarSubtitle" parent="TextAppearance.Material3.BodySmall">
         <item name="fontFamily">@font/poppins_regular</item>
         <item name="android:fontFamily">@font/poppins_regular</item>
         <item name="android:textSize">13sp</item>

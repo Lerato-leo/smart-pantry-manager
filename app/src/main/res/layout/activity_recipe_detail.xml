@@ -9,15 +9,15 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.Spens.AppBarOverlay">
+        android:theme="@style/Theme.Dijong.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.Spens.PopupOverlay"
-            app:titleTextAppearance="@style/TextAppearance.Spens.ToolbarTitle" />
+            app:popupTheme="@style/Theme.Dijong.PopupOverlay"
+            app:titleTextAppearance="@style/TextAppearance.Dijong.ToolbarTitle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

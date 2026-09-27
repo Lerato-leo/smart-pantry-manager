@@ -18,7 +18,7 @@
 
         <TextView
             android:id="@+id/tv_ready_header"
-            style="@style/Widget.Spens.SectionHeader"
+            style="@style/Widget.Dijong.SectionHeader"
             android:text="@string/section_ready_to_cook" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -80,7 +80,7 @@
                 android:layout_marginTop="@dimen/space_md" />
 
             <TextView
-                style="@style/Widget.Spens.SectionHeader"
+                style="@style/Widget.Dijong.SectionHeader"
                 android:text="@string/section_almost_there"
                 android:textColor="@color/almost_there_accent" />
 

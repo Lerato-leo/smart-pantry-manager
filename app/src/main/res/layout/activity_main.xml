@@ -9,7 +9,7 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.Spens.AppBarOverlay"
+        android:theme="@style/Theme.Dijong.AppBarOverlay"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
@@ -19,9 +19,9 @@
             android:minHeight="?attr/actionBarSize"
             android:paddingVertical="@dimen/space_xs"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.Spens.PopupOverlay"
-            app:subtitleTextAppearance="@style/TextAppearance.Spens.ToolbarSubtitle"
-            app:titleTextAppearance="@style/TextAppearance.Spens.ToolbarTitle" />
+            app:popupTheme="@style/Theme.Dijong.PopupOverlay"
+            app:subtitleTextAppearance="@style/TextAppearance.Dijong.ToolbarSubtitle"
+            app:titleTextAppearance="@style/TextAppearance.Dijong.ToolbarTitle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

@@ -4,10 +4,10 @@ plugins {
 
 android {
     compileSdk 34
-    namespace "za.ac.richfield.spens"
+    namespace "za.ac.richfield.dijong"
 
     defaultConfig {
-        applicationId "za.ac.richfield.spens"
+        applicationId "za.ac.richfield.dijong"
         minSdk 24
         targetSdk 34
         versionCode 1
