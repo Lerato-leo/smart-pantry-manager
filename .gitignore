@@ -106,7 +106,8 @@ Thumbs.db
 
 # Android Studio 3.0+ tagged as instant apps
 !.settings/
-!.gradle/
 !gradlew
 !gradlew.bat
-!build/
+
+# Local UI dumps from adb uiautomator
+ui_*.xml
