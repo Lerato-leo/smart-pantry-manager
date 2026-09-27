@@ -82,7 +82,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
     private void setUpUnitDropdown() {
         String[] units = getResources().getStringArray(R.array.ingredient_units);
         knownUnits = Arrays.asList(units);
-        actvUnit.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, units));
+        actvUnit.setAdapter(new ArrayAdapter<>(this, R.layout.item_unit_dropdown, units));
         // This is a fixed-choice dropdown, not free-text autocomplete: disabling the key
         // listener stops ArrayAdapter's built-in filtering from narrowing the list down to
         // whatever was previously selected every time the menu is reopened.

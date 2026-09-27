@@ -7,4 +7,10 @@
 
     <dimen name="card_corner_radius">16dp</dimen>
     <dimen name="content_max_width">560dp</dimen>
+
+    <!-- Unit dropdown: 4.5 rows of 48dp plus the popup's 8dp top and bottom padding, so
+         four units show and the half-visible fifth hints that the list scrolls, instead
+         of the menu covering the whole form. -->
+    <dimen name="dropdown_row_height">48dp</dimen>
+    <dimen name="dropdown_max_height">232dp</dimen>
 </resources>
