@@ -5,6 +5,8 @@
     <!-- PantryListFragment: "spens" is Afrikaans for pantry/larder, and doubles as the app name -->
     <string name="title_pantry">My Spens</string>
     <string name="action_add_ingredient">Add Ingredient</string>
+    <string name="title_add_ingredient">Add ingredient</string>
+    <string name="title_edit_ingredient">Edit ingredient</string>
     <string name="hint_ingredient_name">Ingredient name</string>
     <string name="hint_quantity">Quantity</string>
     <string name="hint_unit">Unit</string>

@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
@@ -69,6 +70,13 @@ public class AddEditIngredientActivity extends AppCompatActivity {
 
         itemId = getIntent().getLongExtra(EXTRA_ITEM_ID, NO_ITEM_ID);
         isEditing = itemId != NO_ITEM_ID;
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        setTitle(isEditing ? R.string.title_edit_ingredient : R.string.title_add_ingredient);
         if (isEditing) {
             viewModel.selectItem(itemId);
             viewModel.getSelectedItem().observe(this, this::populateFields);
@@ -77,6 +85,12 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         btnPickDate.setOnClickListener(v -> showDatePickerDialog());
         btnSave.setOnClickListener(v -> saveItem());
         btnCancel.setOnClickListener(v -> finish());
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     private void setUpUnitDropdown() {
