@@ -10,7 +10,7 @@ in the bin.
 
 ## Features
 
-- **My Dijong**: add, edit and delete pantry items (name, quantity, unit, category, optional
+- **Dijong** (the main page): add, edit and delete pantry items (name, quantity, unit, category, optional
   expiry date). Each card shows its category, and anything expiring soon or already expired gets
   a "Tomorrow" / "In 2 days" / "Expired" badge and moves to the top. Delete from the edit screen
   or by swiping a card away; both offer Undo.

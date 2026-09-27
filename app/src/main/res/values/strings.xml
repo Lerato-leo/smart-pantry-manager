@@ -3,7 +3,7 @@
     <string name="app_tagline">Know what you have before it goes off</string>
 
     <!-- PantryListFragment -->
-    <string name="title_pantry">My Dijong</string>
+    <string name="title_pantry">Dijong</string>
     <string name="action_add_ingredient">Add Ingredient</string>
     <string name="title_add_ingredient">Add ingredient</string>
     <string name="title_edit_ingredient">Edit ingredient</string>

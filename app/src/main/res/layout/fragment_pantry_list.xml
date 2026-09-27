@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- My Dijong: a count line, the pantry cards, and the add button. The coordinator lets the
+<!-- Dijong (main page): a count line, the pantry cards, and the add button. The coordinator lets the
      add button slide up out of the way when a snackbar appears. -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
