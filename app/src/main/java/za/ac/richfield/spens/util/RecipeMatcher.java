@@ -10,11 +10,14 @@ import za.ac.richfield.spens.data.entity.PantryItem;
 import za.ac.richfield.spens.data.entity.RecipeIngredient;
 
 /**
- * Decides which recipes a spens can currently produce, by comparing what a recipe calls for
- * against what's on hand. The rule is deliberately strict: every ingredient must be present in
- * at least the required quantity and a compatible unit, or the whole recipe is ruled out. There's
- * no partial-match "you're close!" mode and no unit conversion across measurement systems
- * (grams never satisfy a millilitre requirement, even for the same ingredient).
+ * Decides which recipes the current pantry stock can produce, by comparing what a recipe calls
+ * for against what's on hand. The rule is deliberately strict: every ingredient must be present
+ * in at least the required quantity, or the whole recipe is ruled out.
+ *
+ * <p>Quantities are compared in a shared base unit, so 1 kg of flour covers a recipe asking for
+ * 500 g, and a 750 ml bottle of oil covers 2 tbsp. Conversion never crosses between mass and
+ * volume, though: grams never satisfy a millilitre requirement, since that would mean guessing
+ * the ingredient's density.
  *
  * <p>This class touches nothing Android-specific, so it can be exercised with plain JUnit.
  */
@@ -22,6 +25,32 @@ public final class RecipeMatcher {
 
     /** Joins a normalized ingredient name and unit into one lookup key for the stock map. */
     private static final String KEY_JOINER = "#";
+
+    /** Absorbs floating-point noise from conversions, e.g. 0.3 kg becoming 300.00000000000006 g. */
+    private static final double QUANTITY_TOLERANCE = 1e-6;
+
+    private static final String BASE_MASS_UNIT = "gram";
+    private static final String BASE_VOLUME_UNIT = "ml";
+
+    /** How many grams one of each canonical mass unit is. */
+    private static final Map<String, Double> GRAMS_PER_UNIT = new HashMap<>();
+
+    /** How many millilitres one of each canonical volume unit is (metric kitchen measures). */
+    private static final Map<String, Double> MILLILITRES_PER_UNIT = new HashMap<>();
+
+    static {
+        GRAMS_PER_UNIT.put("gram", 1.0);
+        GRAMS_PER_UNIT.put("kilogram", 1000.0);
+        GRAMS_PER_UNIT.put("milligram", 0.001);
+        GRAMS_PER_UNIT.put("ounce", 28.35);
+        GRAMS_PER_UNIT.put("pound", 453.6);
+
+        MILLILITRES_PER_UNIT.put("ml", 1.0);
+        MILLILITRES_PER_UNIT.put("liter", 1000.0);
+        MILLILITRES_PER_UNIT.put("teaspoon", 5.0);
+        MILLILITRES_PER_UNIT.put("tablespoon", 15.0);
+        MILLILITRES_PER_UNIT.put("cup", 250.0);
+    }
 
     private RecipeMatcher() {
         // Static helpers only.
@@ -148,16 +177,44 @@ public final class RecipeMatcher {
         }
     }
 
+    /**
+     * The unit a quantity is converted into before comparing: grams for anything measured by
+     * mass, millilitres for anything measured by volume, and the unit itself for counts such
+     * as "unit", "slice" or "can", which can't be converted.
+     */
+    public static String baseUnit(String rawUnit) {
+        String unit = normalizeUnit(rawUnit);
+        if (GRAMS_PER_UNIT.containsKey(unit)) {
+            return BASE_MASS_UNIT;
+        }
+        if (MILLILITRES_PER_UNIT.containsKey(unit)) {
+            return BASE_VOLUME_UNIT;
+        }
+        return unit;
+    }
+
+    /** Converts a quantity into {@link #baseUnit}, e.g. 1.5 kg -> 1500 (grams). */
+    public static double toBaseQuantity(double quantity, String rawUnit) {
+        String unit = normalizeUnit(rawUnit);
+        if (GRAMS_PER_UNIT.containsKey(unit)) {
+            return quantity * GRAMS_PER_UNIT.get(unit);
+        }
+        if (MILLILITRES_PER_UNIT.containsKey(unit)) {
+            return quantity * MILLILITRES_PER_UNIT.get(unit);
+        }
+        return quantity;
+    }
+
     /** Builds the lookup key shared by pantry stock and recipe requirements alike. */
     private static String stockKey(String ingredientName, String unit) {
-        return normalizeIngredientName(ingredientName) + KEY_JOINER + normalizeUnit(unit);
+        return normalizeIngredientName(ingredientName) + KEY_JOINER + baseUnit(unit);
     }
 
     /**
      * Totals up everything on the shelf into one map, so a recipe check is a handful of lookups
      * rather than scanning the whole pantry per ingredient. Two entries for the same ingredient
      * and unit (e.g. two cartons of milk logged separately) are summed rather than overwriting
-     * one another.
+     * one another, and so are entries in different units of the same kind (500 g + 1 kg).
      */
     public static Map<String, Double> buildPantryQuantityMap(List<PantryItem> stock) {
         Map<String, Double> onHandByKey = new HashMap<>();
@@ -166,14 +223,15 @@ public final class RecipeMatcher {
         }
         for (PantryItem stockedItem : stock) {
             String key = stockKey(stockedItem.getName(), stockedItem.getUnit());
-            onHandByKey.merge(key, stockedItem.getQuantity(), Double::sum);
+            double baseQuantity = toBaseQuantity(stockedItem.getQuantity(), stockedItem.getUnit());
+            onHandByKey.merge(key, baseQuantity, Double::sum);
         }
         return onHandByKey;
     }
 
     /**
      * @param requiredIngredients what the recipe calls for
-     * @param onHandByKey         the spens's current stock, as built by {@link #buildPantryQuantityMap}
+     * @param onHandByKey         the pantry's current stock, as built by {@link #buildPantryQuantityMap}
      * @return true only if every single ingredient clears its required quantity
      */
     public static boolean canMakeRecipe(List<RecipeIngredient> requiredIngredients, Map<String, Double> onHandByKey) {
@@ -183,10 +241,11 @@ public final class RecipeMatcher {
         for (RecipeIngredient needed : requiredIngredients) {
             String key = stockKey(needed.getIngredientName(), needed.getUnit());
             Double available = onHandByKey.get(key);
-            // A unit mismatch (e.g. the recipe wants grams but the pantry has millilitres of
-            // the same ingredient) is treated as "don't have it" rather than guessing a
-            // conversion, since guessing wrong would suggest an uncookable recipe as ready.
-            if (available == null || available < needed.getRequiredQuantity()) {
+            double required = toBaseQuantity(needed.getRequiredQuantity(), needed.getUnit());
+            // A mass/volume mismatch (the recipe wants grams, the pantry has millilitres of the
+            // same ingredient) lands on a different key, so it reads as "don't have it" rather
+            // than guessing a conversion that could suggest an uncookable recipe as ready.
+            if (available == null || available + QUANTITY_TOLERANCE < required) {
                 return false;
             }
         }

@@ -96,14 +96,30 @@ public class RecipeMatcherTest {
     }
 
     @Test
+    public void baseUnit_groupsMassAndVolumeUnits() {
+        assertEquals("gram", RecipeMatcher.baseUnit("kg"));
+        assertEquals("gram", RecipeMatcher.baseUnit("oz"));
+        assertEquals("ml", RecipeMatcher.baseUnit("l"));
+        assertEquals("ml", RecipeMatcher.baseUnit("tbsp"));
+        assertEquals("unit", RecipeMatcher.baseUnit("pcs"));
+    }
+
+    @Test
+    public void toBaseQuantity_convertsIntoBaseUnit() {
+        assertEquals(1500.0, RecipeMatcher.toBaseQuantity(1.5, "kg"), 0.0001);
+        assertEquals(30.0, RecipeMatcher.toBaseQuantity(2, "tbsp"), 0.0001);
+        assertEquals(3.0, RecipeMatcher.toBaseQuantity(3, "slices"), 0.0001);
+    }
+
+    @Test
     public void buildPantryQuantityMap_sumsQuantitiesForSameNormalizedKey() {
         List<PantryItem> items = Arrays.asList(
                 pantryItem("Tomato", 1, "kg"),
-                pantryItem("Tomatoes", 2, "kg"));
+                pantryItem("Tomatoes", 500, "g"));
 
         Map<String, Double> map = RecipeMatcher.buildPantryQuantityMap(items);
 
-        assertEquals(3.0, map.get("tomato#kilogram"), 0.0001);
+        assertEquals(1500.0, map.get("tomato#gram"), 0.0001);
     }
 
     @Test
@@ -112,9 +128,9 @@ public class RecipeMatcherTest {
                 ingredient("Tomatoes", 2, "kg"),
                 ingredient("Onion", 1, "unit"));
 
-        Map<String, Double> pantry = new HashMap<>();
-        pantry.put("tomato#kilogram", 3.0);
-        pantry.put("onion#unit", 2.0);
+        Map<String, Double> pantry = pantry(
+                pantryItem("tomato", 3, "kg"),
+                pantryItem("onions", 2, "unit"));
 
         assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry));
     }
@@ -128,19 +144,58 @@ public class RecipeMatcherTest {
     @Test
     public void canMakeRecipe_falseWhenQuantityInsufficient() {
         List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Tomatoes", 2, "kg"));
-        Map<String, Double> pantry = new HashMap<>();
-        pantry.put("tomato#kilogram", 1.0);
+        Map<String, Double> pantry = pantry(pantryItem("tomato", 1, "kg"));
 
         assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry));
     }
 
     @Test
-    public void canMakeRecipe_falseWhenUnitMismatch() {
-        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Tomatoes", 2, "kg"));
-        Map<String, Double> pantry = new HashMap<>();
-        pantry.put("tomato#gram", 5000.0);
+    public void canMakeRecipe_falseWhenOneOfFiveIngredientsMissing() {
+        // The brief's own example: 4 of 5 ingredients is still not a match.
+        List<RecipeIngredient> ingredients = Arrays.asList(
+                ingredient("Flour", 500, "g"),
+                ingredient("Egg", 2, "unit"),
+                ingredient("Milk", 250, "ml"),
+                ingredient("Butter", 50, "g"),
+                ingredient("Sugar", 100, "g"));
+        Map<String, Double> pantry = pantry(
+                pantryItem("flour", 1, "kg"),
+                pantryItem("eggs", 6, "unit"),
+                pantryItem("milk", 1, "l"),
+                pantryItem("butter", 250, "g"));
 
         assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry));
+    }
+
+    @Test
+    public void canMakeRecipe_convertsBetweenMassUnits() {
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Flour", 500, "g"));
+
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("flour", 1, "kg"))));
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("flour", 0.4, "kg"))));
+    }
+
+    @Test
+    public void canMakeRecipe_convertsBetweenVolumeUnits() {
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Vegetable oil", 2, "tbsp"));
+
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("vegetable oil", 750, "ml"))));
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("vegetable oil", 1, "tsp"))));
+    }
+
+    @Test
+    public void canMakeRecipe_exactQuantityAfterConversionIsEnough() {
+        // 0.3 kg -> 300.00000000000006 g in floating point; 300 g must still count as enough.
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Beef", 0.3, "kg"));
+
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("beef", 300, "g"))));
+    }
+
+    @Test
+    public void canMakeRecipe_falseWhenMassAndVolumeMismatch() {
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Cream", 250, "ml"));
+
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("cream", 5, "kg"))));
     }
 
     @Test
@@ -154,13 +209,15 @@ public class RecipeMatcherTest {
         RecipeWithIngredients notMakeable = recipeWith(2L, "Not makeable", ingredient("Beef", 1, "kg"));
         List<RecipeWithIngredients> recipes = Arrays.asList(makeable, notMakeable);
 
-        Map<String, Double> pantry = new HashMap<>();
-        pantry.put("onion#unit", 5.0);
-
-        List<RecipeWithIngredients> matches = RecipeMatcher.getMatchingRecipes(recipes, pantry);
+        List<RecipeWithIngredients> matches =
+                RecipeMatcher.getMatchingRecipes(recipes, pantry(pantryItem("onion", 5, "unit")));
 
         assertEquals(1, matches.size());
         assertEquals(makeable, matches.get(0));
+    }
+
+    private static Map<String, Double> pantry(PantryItem... items) {
+        return RecipeMatcher.buildPantryQuantityMap(Arrays.asList(items));
     }
 
     private static PantryItem pantryItem(String name, double quantity, String unit) {
