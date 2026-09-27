@@ -17,6 +17,7 @@ import java.util.Objects;
 import za.ac.richfield.spens.R;
 import za.ac.richfield.spens.data.entity.PantryItem;
 import za.ac.richfield.spens.util.ExpiryDateConverter;
+import za.ac.richfield.spens.util.QuantityFormatter;
 
 /**
  * Adapter for displaying pantry items in a RecyclerView.
@@ -100,8 +101,7 @@ public class PantryAdapter extends ListAdapter<PantryItem, PantryAdapter.PantryV
 
         public void bind(PantryItem item) {
             tvName.setText(item.getName());
-            String quantityUnit = String.format("%s %s", item.getQuantity(), item.getUnit());
-            tvQuantityUnit.setText(quantityUnit);
+            tvQuantityUnit.setText(QuantityFormatter.formatWithUnit(item.getQuantity(), item.getUnit()));
 
             Long expiryDate = item.getExpiryDate();
             if (expiryDate == null) {

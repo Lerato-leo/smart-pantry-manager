@@ -39,4 +39,18 @@
         <item name="fontFamily">@font/poppins_semibold</item>
         <item name="android:fontFamily">@font/poppins_semibold</item>
     </style>
+
+    <!-- Toolbar text is sized explicitly: Poppins has tall line metrics, so the default
+         toolbar sizes clipped the subtitle's descenders inside a 56dp bar. -->
+    <style name="TextAppearance.Spens.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/poppins_semibold</item>
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TextAppearance.Spens.ToolbarSubtitle" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">13sp</item>
+    </style>
 </resources>

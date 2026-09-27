@@ -22,6 +22,7 @@ import java.util.List;
 import za.ac.richfield.spens.data.entity.PantryItem;
 import za.ac.richfield.spens.ui.pantry.PantryViewModel;
 import za.ac.richfield.spens.util.ExpiryDateConverter;
+import za.ac.richfield.spens.util.QuantityFormatter;
 
 /**
  * Activity for adding or editing a pantry item. Reads and writes go straight through
@@ -103,7 +104,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             return;
         }
         etName.setText(item.getName());
-        etQuantity.setText(String.valueOf(item.getQuantity()));
+        etQuantity.setText(QuantityFormatter.format(item.getQuantity()));
         etExpiryDate.setText(ExpiryDateConverter.formatEpochDay(item.getExpiryDate()));
 
         String unit = item.getUnit();

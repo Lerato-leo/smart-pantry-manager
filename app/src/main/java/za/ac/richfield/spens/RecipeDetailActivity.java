@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 import za.ac.richfield.spens.data.RecipeWithIngredients;
 import za.ac.richfield.spens.data.entity.RecipeIngredient;
 import za.ac.richfield.spens.ui.recipes.RecipeDetailViewModel;
+import za.ac.richfield.spens.util.QuantityFormatter;
 
 /**
  * Activity to display a recipe's details.
@@ -58,9 +59,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         StringBuilder ingredientsBuilder = new StringBuilder();
         for (RecipeIngredient ingredient : recipe.getIngredients()) {
             ingredientsBuilder.append("• ")
-                    .append(ingredient.getRequiredQuantity())
-                    .append(" ")
-                    .append(ingredient.getUnit())
+                    .append(QuantityFormatter.formatWithUnit(ingredient.getRequiredQuantity(), ingredient.getUnit()))
                     .append(" ")
                     .append(ingredient.getIngredientName())
                     .append("\n");
@@ -71,7 +70,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        finish();
         return true;
     }
 }
