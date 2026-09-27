@@ -190,6 +190,14 @@ public class RecipeMatcherTest {
     }
 
     @Test
+    public void canMakeRecipe_convertsFluidOuncesToMillilitres() {
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Milk", 250, "ml"));
+
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("milk", 10, "fl oz"))));
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("milk", 8, "fl oz"))));
+    }
+
+    @Test
     public void canMakeRecipe_exactQuantityAfterConversionIsEnough() {
         // 0.3 kg -> 300.00000000000006 g in floating point; 300 g must still count as enough.
         List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Beef", 0.3, "kg"));

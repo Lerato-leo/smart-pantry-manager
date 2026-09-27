@@ -15,6 +15,7 @@ import za.ac.richfield.dijong.data.RecipeWithIngredients;
 import za.ac.richfield.dijong.data.entity.RecipeIngredient;
 import za.ac.richfield.dijong.util.QuantityFormatter;
 import za.ac.richfield.dijong.util.RecipeMatcher.AlmostThereRecipe;
+import za.ac.richfield.dijong.util.UnitSystem;
 
 /**
  * Adapter for the "Almost there" list: recipes one ingredient short, each showing what's
@@ -24,10 +25,13 @@ import za.ac.richfield.dijong.util.RecipeMatcher.AlmostThereRecipe;
 public class AlmostThereAdapter extends ListAdapter<AlmostThereRecipe, AlmostThereAdapter.AlmostThereViewHolder> {
 
     private final RecipeAdapter.OnRecipeClickListener clickListener;
+    private final boolean imperial;
 
-    public AlmostThereAdapter(RecipeAdapter.OnRecipeClickListener clickListener) {
+    /** @param imperial show "need more" amounts in imperial units (Settings > Units) */
+    public AlmostThereAdapter(RecipeAdapter.OnRecipeClickListener clickListener, boolean imperial) {
         super(DIFF_CALLBACK);
         this.clickListener = clickListener;
+        this.imperial = imperial;
     }
 
     private static final DiffUtil.ItemCallback<AlmostThereRecipe> DIFF_CALLBACK =
@@ -84,7 +88,8 @@ public class AlmostThereAdapter extends ListAdapter<AlmostThereRecipe, AlmostThe
             if (almostThere.isMissingEntirely()) {
                 tvMissing.setText(itemView.getContext().getString(R.string.format_missing_ingredient, name));
             } else {
-                String amount = QuantityFormatter.formatWithUnit(almostThere.getMissingQuantity(), missing.getUnit());
+                UnitSystem.Amount shortfall = UnitSystem.forDisplay(almostThere.getMissingQuantity(), missing.getUnit(), imperial);
+                String amount = QuantityFormatter.formatWithUnit(shortfall.quantity, shortfall.unit);
                 tvMissing.setText(itemView.getContext().getString(R.string.format_need_more_ingredient, amount, name));
             }
         }

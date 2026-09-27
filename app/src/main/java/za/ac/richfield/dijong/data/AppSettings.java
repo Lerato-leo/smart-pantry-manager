@@ -37,7 +37,10 @@ public final class AppSettings {
         prefs.edit().putBoolean(KEY_SHOW_ALMOST_THERE, shown).apply();
     }
 
-    /** Off by default: South African kitchens measure in metric. */
+    /**
+     * True for imperial, false (the default) for metric: South African kitchens measure in
+     * metric. It's one or the other, never both; see {@link za.ac.richfield.dijong.util.UnitSystem}.
+     */
     public boolean isImperialUnitsEnabled() {
         return prefs.getBoolean(KEY_IMPERIAL_UNITS, false);
     }

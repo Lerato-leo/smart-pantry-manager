@@ -17,12 +17,14 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.List;
 import java.util.Map;
 
+import za.ac.richfield.dijong.data.AppSettings;
 import za.ac.richfield.dijong.data.RecipeWithIngredients;
 import za.ac.richfield.dijong.data.entity.RecipeIngredient;
 import za.ac.richfield.dijong.ui.recipes.RecipeDetailViewModel;
 import za.ac.richfield.dijong.util.QuantityFormatter;
 import za.ac.richfield.dijong.util.RecipeMatcher;
 import za.ac.richfield.dijong.util.RecipeSteps;
+import za.ac.richfield.dijong.util.UnitSystem;
 
 /**
  * Shows one recipe: whether you can cook it, each ingredient ticked or marked missing
@@ -42,6 +44,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
     private RecipeWithIngredients recipe;
     private Map<String, Double> pantryStock;
+    private boolean imperial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         setTitle(R.string.title_recipe);
+        imperial = new AppSettings(this).isImperialUnitsEnabled();
 
         long recipeId = getIntent().getLongExtra(EXTRA_RECIPE_ID, NO_RECIPE_ID);
         if (recipeId == NO_RECIPE_ID) {
@@ -128,8 +132,9 @@ public class RecipeDetailActivity extends AppCompatActivity {
             row.findViewById(R.id.tv_missing_pill).setVisibility(View.VISIBLE);
         }
         ((TextView) row.findViewById(R.id.tv_ingredient_name)).setText(capitalise(ingredient.getIngredientName()));
+        UnitSystem.Amount amount = UnitSystem.forDisplay(ingredient.getRequiredQuantity(), ingredient.getUnit(), imperial);
         ((TextView) row.findViewById(R.id.tv_ingredient_amount)).setText(
-                QuantityFormatter.formatWithUnit(ingredient.getRequiredQuantity(), ingredient.getUnit()));
+                QuantityFormatter.formatWithUnit(amount.quantity, amount.unit));
         return row;
     }
 

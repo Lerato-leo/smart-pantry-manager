@@ -71,7 +71,8 @@ public class SuggestedRecipesFragment extends Fragment {
         readyList.setAdapter(adapter);
 
         almostThereList.setLayoutManager(new LinearLayoutManager(requireContext()));
-        almostThereAdapter = new AlmostThereAdapter(this::openRecipeDetail);
+        almostThereAdapter = new AlmostThereAdapter(this::openRecipeDetail,
+                new AppSettings(requireContext()).isImperialUnitsEnabled());
         almostThereList.setAdapter(almostThereAdapter);
 
         view.findViewById(R.id.btn_add_ingredients).setOnClickListener(v ->

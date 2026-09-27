@@ -62,7 +62,6 @@ public class AddEditIngredientActivity extends AppCompatActivity {
 
     private static final long NO_ITEM_ID = -1;
     private static final String OTHER_UNIT_OPTION = "Other";
-    private static final List<String> IMPERIAL_UNITS = Arrays.asList("oz", "lb");
 
     private TextInputLayout tilName;
     private EditText etName;
@@ -146,18 +145,20 @@ public class AddEditIngredientActivity extends AppCompatActivity {
     }
 
     /**
-     * Metric units always; oz and lb only with "Include imperial" on in Settings, or when the
-     * item being edited already uses one, so editing never silently changes its unit.
+     * The chosen system's weights and volumes (metric or imperial, from Settings), then the
+     * spoons, cups and counted units both systems share. An item saved in the other system
+     * keeps its unit in the list, so editing it never silently changes the unit.
      */
     private void setUpUnitDropdown(String unitBeingEdited) {
-        boolean includeImperial = new AppSettings(this).isImperialUnitsEnabled()
-                || IMPERIAL_UNITS.contains(unitBeingEdited);
-        unitOptions = new ArrayList<>();
-        for (String unit : getResources().getStringArray(R.array.ingredient_units)) {
-            if (includeImperial || !IMPERIAL_UNITS.contains(unit)) {
-                unitOptions.add(unit);
-            }
+        boolean imperial = new AppSettings(this).isImperialUnitsEnabled();
+        unitOptions = new ArrayList<>(Arrays.asList(getResources().getStringArray(
+                imperial ? R.array.units_imperial : R.array.units_metric)));
+        List<String> otherSystem = Arrays.asList(getResources().getStringArray(
+                imperial ? R.array.units_metric : R.array.units_imperial));
+        if (otherSystem.contains(unitBeingEdited)) {
+            unitOptions.add(unitBeingEdited);
         }
+        unitOptions.addAll(Arrays.asList(getResources().getStringArray(R.array.units_shared)));
         actvUnit.setAdapter(new ArrayAdapter<>(this, R.layout.item_unit_dropdown, unitOptions));
         // This is a fixed-choice dropdown, not free-text autocomplete: disabling the key
         // listener stops ArrayAdapter's built-in filtering from narrowing the list down to

@@ -50,6 +50,7 @@ public final class RecipeMatcher {
         MILLILITRES_PER_UNIT.put("teaspoon", 5.0);
         MILLILITRES_PER_UNIT.put("tablespoon", 15.0);
         MILLILITRES_PER_UNIT.put("cup", 250.0);
+        MILLILITRES_PER_UNIT.put("fluid_ounce", 29.57);
     }
 
     private RecipeMatcher() {
@@ -138,6 +139,11 @@ public final class RecipeMatcher {
             case "ounce":
             case "ounces":
                 return "ounce";
+            case "fl oz":
+            case "floz":
+            case "fluid ounce":
+            case "fluid ounces":
+                return "fluid_ounce";
             case "lb":
             case "pound":
             case "pounds":
