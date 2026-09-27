@@ -274,6 +274,15 @@ public class RecipeMatcherTest {
         assertEquals(b, almost.get(0).getRecipe());
     }
 
+    @Test
+    public void isInStock_checksOneIngredientWithConversion() {
+        Map<String, Double> stock = pantry(pantryItem("flour", 1, "kg"), pantryItem("onions", 1, "unit"));
+
+        assertTrue(RecipeMatcher.isInStock(ingredient("Flour", 500, "g"), stock));
+        assertFalse(RecipeMatcher.isInStock(ingredient("Onion", 2, "unit"), stock));
+        assertFalse(RecipeMatcher.isInStock(ingredient("Milk", 250, "ml"), stock));
+    }
+
     private static Map<String, Double> pantry(PantryItem... items) {
         return RecipeMatcher.buildPantryQuantityMap(Arrays.asList(items));
     }

@@ -23,4 +23,8 @@
         <item quantity="one">From the %d ingredient in your pantry</item>
         <item quantity="other">From the %d ingredients in your pantry</item>
     </plurals>
+    <plurals name="missing_ingredient_count">
+        <item quantity="one">Missing %d ingredient</item>
+        <item quantity="other">Missing %d ingredients</item>
+    </plurals>
 </resources>

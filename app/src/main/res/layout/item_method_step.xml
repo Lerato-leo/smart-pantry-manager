@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One numbered method step: a teal number bubble, then the instruction -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tv_step_number"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/shape_status_dot"
+        android:backgroundTint="@color/teal_container"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Dijong.Badge"
+        android:textColor="@color/teal"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/tv_step_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:lineSpacingExtra="4sp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="@color/ink"
+        tools:text="Brown the chicken thighs in a hot pot, then set aside." />
+
+</LinearLayout>

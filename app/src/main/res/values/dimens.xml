@@ -8,6 +8,7 @@
     <dimen name="card_corner_radius">16dp</dimen>
     <dimen name="field_corner_radius">12dp</dimen>
     <dimen name="form_gap">20dp</dimen>
+    <dimen name="missing_icon_size">12dp</dimen>
     <dimen name="content_max_width">560dp</dimen>
 
     <!-- Bottom padding for lists under the add button (56dp FAB + 24dp margin + 8dp gap),

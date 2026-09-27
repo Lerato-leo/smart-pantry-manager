@@ -246,6 +246,11 @@ public final class RecipeMatcher {
         return true;
     }
 
+    /** True when the pantry holds at least the required amount of this one ingredient. */
+    public static boolean isInStock(RecipeIngredient needed, Map<String, Double> onHandByKey) {
+        return missingQuantity(needed, onHandByKey) <= 0;
+    }
+
     /**
      * How much more of one ingredient the pantry needs, in the recipe's own unit: 0 when there
      * is enough, the full required amount when there is none at all.

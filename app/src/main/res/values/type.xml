@@ -102,6 +102,12 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="TextAppearance.Dijong.RecipeTitle" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="fontFamily">@font/poppins_semibold</item>
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <!-- "Ready to cook", "Almost there", "Ingredients", "Method" -->
     <style name="TextAppearance.Dijong.SectionTitle" parent="TextAppearance.Material3.TitleMedium">
         <item name="fontFamily">@font/poppins_semibold</item>

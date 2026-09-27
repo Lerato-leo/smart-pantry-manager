@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One ingredient on the recipe screen: in-pantry tick (or empty ring with a cross), the
+     name with a "Missing" pill when needed, and the amount the recipe calls for. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="40dp"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:id="@+id/status_circle"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/shape_status_dot"
+        android:backgroundTint="@color/teal">
+
+        <ImageView
+            android:id="@+id/iv_status"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/ic_check"
+            app:tint="@color/white" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_ingredient_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="@color/ink"
+        android:textSize="15sp"
+        tools:text="Curry powder" />
+
+    <TextView
+        android:id="@+id/tv_missing_pill"
+        style="@style/Widget.Dijong.Pill"
+        android:layout_marginStart="@dimen/space_sm"
+        android:backgroundTint="@color/amber"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="1dp"
+        android:text="@string/missing"
+        android:textAppearance="@style/TextAppearance.Dijong.Badge"
+        android:textColor="@color/ink"
+        android:textSize="11sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/tv_ingredient_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_sm"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="@color/ink_muted"
+        tools:text="2 tbsp" />
+
+</LinearLayout>
