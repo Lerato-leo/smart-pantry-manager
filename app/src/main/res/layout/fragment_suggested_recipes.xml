@@ -1,106 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- What Can I Cook: "Ready to cook" (the strict matches) and, clearly separate below it,
+     the amber "Almost there" panel of recipes one ingredient short. When neither has
+     anything, a full empty state with an Add ingredients button takes over. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/suggested_recipes_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
-    android:fillViewport="true">
+    android:background="@color/cream">
 
-    <!-- Both lists sit in one scrolling column with nested scrolling off, so the page scrolls
-         as a whole. The catalogue is small (20 recipes), so no recycling is lost that matters. -->
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/recipes_scroll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/space_md">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_ready_header"
-            style="@style/Widget.Dijong.SectionHeader"
-            android:text="@string/section_ready_to_cook" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_suggested_recipes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false" />
-
+        <!-- Both lists sit in one scrolling column with nested scrolling off, so the page
+             scrolls as a whole. The catalogue is small (20 recipes), so no recycling that
+             matters is lost. -->
         <LinearLayout
-            android:id="@+id/empty_state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="vertical"
-            android:padding="@dimen/space_xl"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:padding="@dimen/space_md">
 
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:alpha="0.5"
-                android:contentDescription="@null"
-                app:srcCompat="@drawable/ic_recipes"
-                app:tint="?attr/colorPrimary" />
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_md"
-                android:gravity="center"
-                android:text="@string/empty_recipes_title"
-                android:textAppearance="?attr/textAppearanceTitleLarge"
-                android:textColor="?attr/colorOnSurface" />
+                android:baselineAligned="true"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/space_xs"
+                android:paddingBottom="@dimen/space_xs">
+
+                <TextView
+                    android:id="@+id/tv_ready_header"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/section_ready_to_cook"
+                    android:textAppearance="@style/TextAppearance.Dijong.SectionTitle"
+                    android:textColor="@color/teal" />
+
+                <TextView
+                    android:id="@+id/tv_ready_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="@color/ink_muted"
+                    android:textSize="13sp"
+                    tools:text="3 recipes" />
+
+            </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_none_ready"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_xs"
-                android:gravity="center"
-                android:text="@string/empty_recipes_message"
+                android:paddingHorizontal="@dimen/space_xs"
+                android:text="@string/none_ready_yet"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?attr/colorOnSurfaceVariant" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/almost_there_section"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/space_md"
-                android:layout_marginTop="@dimen/space_md" />
-
-            <TextView
-                style="@style/Widget.Dijong.SectionHeader"
-                android:text="@string/section_almost_there"
-                android:textColor="@color/almost_there_accent" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/space_xs"
-                android:paddingHorizontal="@dimen/space_md"
-                android:text="@string/section_almost_there_hint"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textColor="@color/ink_muted"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_almost_there"
+                android:id="@+id/rv_suggested_recipes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false" />
 
+            <LinearLayout
+                android:id="@+id/almost_there_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:background="@drawable/bg_almost_panel"
+                android:orientation="vertical"
+                android:paddingHorizontal="10dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="10dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="6dp"
+                    android:text="@string/section_almost_there"
+                    android:textAppearance="@style/TextAppearance.Dijong.SectionTitle"
+                    android:textColor="@color/ink" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="6dp"
+                    android:text="@string/section_almost_there_hint"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="@color/ink"
+                    android:textSize="13sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_almost_there"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+            </LinearLayout>
+
         </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/space_xl"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="168dp"
+            android:layout_height="136dp"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/ill_empty_cook" />
+
+        <TextView
+            style="@style/Widget.Dijong.EmptyTitle"
+            android:text="@string/empty_recipes_title" />
+
+        <TextView
+            style="@style/Widget.Dijong.EmptyMessage"
+            android:maxWidth="272dp"
+            android:text="@string/empty_recipes_message" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_ingredients"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingHorizontal="24dp"
+            android:text="@string/button_add_ingredients"
+            app:icon="@drawable/ic_add"
+            app:iconSize="20dp" />
 
     </LinearLayout>
 
-</androidx.core.widget.NestedScrollView>
+</FrameLayout>

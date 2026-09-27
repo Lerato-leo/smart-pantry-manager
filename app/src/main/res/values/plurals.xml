@@ -15,4 +15,12 @@
         <item quantity="one">%d ingredient</item>
         <item quantity="other">%d ingredients</item>
     </plurals>
+    <plurals name="recipe_count">
+        <item quantity="one">%d recipe</item>
+        <item quantity="other">%d recipes</item>
+    </plurals>
+    <plurals name="cook_subtitle">
+        <item quantity="one">From the %d ingredient in your pantry</item>
+        <item quantity="other">From the %d ingredients in your pantry</item>
+    </plurals>
 </resources>

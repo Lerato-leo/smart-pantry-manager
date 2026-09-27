@@ -18,7 +18,8 @@ import za.ac.richfield.dijong.util.RecipeMatcher.AlmostThereRecipe;
 
 /**
  * Adapter for the "Almost there" list: recipes one ingredient short, each showing what's
- * missing ("Missing 500 g maize meal") or how much more is needed ("Need 200 g more flour").
+ * missing ("Missing: baked beans") or, when there's some but not enough, how much more is
+ * needed ("Need 200 g more flour").
  */
 public class AlmostThereAdapter extends ListAdapter<AlmostThereRecipe, AlmostThereAdapter.AlmostThereViewHolder> {
 
@@ -79,11 +80,13 @@ public class AlmostThereAdapter extends ListAdapter<AlmostThereRecipe, AlmostThe
             RecipeIngredient missing = almostThere.getMissingIngredient();
             tvName.setText(recipe.getName());
 
-            String amount = QuantityFormatter.formatWithUnit(almostThere.getMissingQuantity(), missing.getUnit());
-            int format = almostThere.isMissingEntirely()
-                    ? R.string.format_missing_ingredient
-                    : R.string.format_need_more_ingredient;
-            tvMissing.setText(itemView.getContext().getString(format, amount, missing.getIngredientName().toLowerCase()));
+            String name = missing.getIngredientName().toLowerCase();
+            if (almostThere.isMissingEntirely()) {
+                tvMissing.setText(itemView.getContext().getString(R.string.format_missing_ingredient, name));
+            } else {
+                String amount = QuantityFormatter.formatWithUnit(almostThere.getMissingQuantity(), missing.getUnit());
+                tvMissing.setText(itemView.getContext().getString(R.string.format_need_more_ingredient, amount, name));
+            }
         }
     }
 }

@@ -28,6 +28,7 @@ public class RecipeViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<List<RecipeWithIngredients>> matchingRecipes = new MediatorLiveData<>();
     private final MutableLiveData<List<AlmostThereRecipe>> almostThereRecipes = new MutableLiveData<>();
+    private final MutableLiveData<Integer> pantryItemCount = new MutableLiveData<>(0);
 
     private List<RecipeWithIngredients> latestRecipes = Collections.emptyList();
     private List<PantryItem> latestPantryItems = Collections.emptyList();
@@ -48,6 +49,7 @@ public class RecipeViewModel extends AndroidViewModel {
     }
 
     private void recompute() {
+        pantryItemCount.setValue(latestPantryItems.size());
         Map<String, Double> pantryQuantities = RecipeMatcher.buildPantryQuantityMap(latestPantryItems);
         almostThereRecipes.setValue(RecipeMatcher.getAlmostThereRecipes(latestRecipes, pantryQuantities));
         matchingRecipes.setValue(RecipeMatcher.getMatchingRecipes(latestRecipes, pantryQuantities));
@@ -63,5 +65,10 @@ public class RecipeViewModel extends AndroidViewModel {
      */
     public LiveData<List<AlmostThereRecipe>> getAlmostThereRecipes() {
         return almostThereRecipes;
+    }
+
+    /** How many ingredients the suggestions were worked out from, for the screen subtitle. */
+    public LiveData<Integer> getPantryItemCount() {
+        return pantryItemCount;
     }
 }

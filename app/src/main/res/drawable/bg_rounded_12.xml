@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 12dp rounded square: recipe icon tiles and the white cards inside "Almost there".
+     White by default; tint it for other colours. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/white" />
+    <corners android:radius="12dp" />
+</shape>

@@ -102,6 +102,13 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <!-- "Ready to cook", "Almost there", "Ingredients", "Method" -->
+    <style name="TextAppearance.Dijong.SectionTitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="fontFamily">@font/poppins_semibold</item>
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <!-- Uppercase section labels on the settings screen -->
     <style name="TextAppearance.Dijong.Overline" parent="TextAppearance.Material3.LabelLarge">
         <item name="fontFamily">@font/poppins_semibold</item>
