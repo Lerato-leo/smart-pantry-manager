@@ -1,6 +1,8 @@
 package za.ac.richfield.dijong.data;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.lifecycle.LiveData;
 
@@ -15,10 +17,13 @@ import za.ac.richfield.dijong.data.dao.RecipeDao;
  */
 public class RecipeRepository {
 
+    private final DijongDatabase database;
     private final RecipeDao recipeDao;
+    private final Handler mainThread = new Handler(Looper.getMainLooper());
 
     public RecipeRepository(Application application) {
-        recipeDao = DijongDatabase.getInstance(application).recipeDao();
+        database = DijongDatabase.getInstance(application);
+        recipeDao = database.recipeDao();
     }
 
     public LiveData<List<RecipeWithIngredients>> getAllRecipesWithIngredients() {
@@ -27,5 +32,21 @@ public class RecipeRepository {
 
     public LiveData<RecipeWithIngredients> getRecipeWithIngredients(long id) {
         return recipeDao.getRecipeWithIngredients(id);
+    }
+
+    /**
+     * Puts the built-in cookbook back exactly as it was on first launch. Pantry items are
+     * untouched. Runs as one transaction, so a screen watching the recipes never sees a
+     * half-empty catalogue; {@code onDone} runs on the main thread afterwards.
+     */
+    public void resetSampleRecipes(Runnable onDone) {
+        DijongDatabase.databaseWriteExecutor.execute(() -> {
+            database.runInTransaction(() -> {
+                recipeDao.deleteAllIngredients();
+                recipeDao.deleteAllRecipes();
+                SouthAfricanRecipeSeeder.populateRecipes(recipeDao);
+            });
+            mainThread.post(onDone);
+        });
     }
 }

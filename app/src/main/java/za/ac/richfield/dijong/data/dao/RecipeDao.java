@@ -31,4 +31,10 @@ public interface RecipeDao {
 
     @Insert
     void insertIngredients(List<RecipeIngredient> ingredients);
+
+    @Query("DELETE FROM recipe_ingredients")
+    void deleteAllIngredients();
+
+    @Query("DELETE FROM recipes")
+    void deleteAllRecipes();
 }

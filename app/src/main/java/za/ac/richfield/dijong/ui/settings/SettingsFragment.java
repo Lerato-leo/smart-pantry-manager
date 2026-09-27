@@ -1,7 +1,6 @@
 package za.ac.richfield.dijong.ui.settings;
 
 import android.Manifest;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,24 +16,29 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.radiobutton.MaterialRadioButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import za.ac.richfield.dijong.R;
+import za.ac.richfield.dijong.data.AppSettings;
+import za.ac.richfield.dijong.data.RecipeRepository;
 import za.ac.richfield.dijong.notify.ExpiryAlertScheduler;
 
 /**
- * Fragment for application settings.
- * Currently includes a toggle for expiring-soon alerts.
+ * Settings: expiring-soon alerts, whether What Can I Cook shows the Almost There list,
+ * whether the unit menu offers imperial units, and a button to restore the built-in recipes.
+ * Choices are saved in {@link AppSettings} as soon as they're made.
  */
 public class SettingsFragment extends Fragment {
 
-    public static final String PREFS_NAME = "DijongPrefs";
-    public static final String KEY_EXPIRING_SOON_ALERTS = "expiring_soon_alerts";
-
+    private AppSettings settings;
     private MaterialSwitch switchExpiringSoon;
-    private SharedPreferences prefs;
+    private MaterialRadioButton radioMetric;
+    private MaterialRadioButton radioImperial;
     private ActivityResultLauncher<String> notificationPermissionLauncher;
-    private final CompoundButton.OnCheckedChangeListener checkedChangeListener =
+    private final CompoundButton.OnCheckedChangeListener alertsChangeListener =
             (buttonView, isChecked) -> {
                 if (isChecked && !hasNotificationPermission()) {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
@@ -60,14 +64,50 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        settings = new AppSettings(requireContext());
 
         switchExpiringSoon = view.findViewById(R.id.switch_expiring_soon_alerts);
+        switchExpiringSoon.setChecked(settings.isExpiringSoonAlertsEnabled());
+        switchExpiringSoon.setOnCheckedChangeListener(alertsChangeListener);
+        view.findViewById(R.id.row_expiring_soon_alerts).setOnClickListener(v -> switchExpiringSoon.toggle());
 
-        prefs = requireContext().getSharedPreferences(PREFS_NAME, 0);
-        boolean expiringSoonEnabled = prefs.getBoolean(KEY_EXPIRING_SOON_ALERTS, false);
-        switchExpiringSoon.setChecked(expiringSoonEnabled);
+        MaterialSwitch switchAlmostThere = view.findViewById(R.id.switch_show_almost_there);
+        switchAlmostThere.setChecked(settings.isAlmostThereShown());
+        switchAlmostThere.setOnCheckedChangeListener((buttonView, isChecked) -> settings.setAlmostThereShown(isChecked));
+        view.findViewById(R.id.row_show_almost_there).setOnClickListener(v -> switchAlmostThere.toggle());
 
-        switchExpiringSoon.setOnCheckedChangeListener(checkedChangeListener);
+        radioMetric = view.findViewById(R.id.radio_units_metric);
+        radioImperial = view.findViewById(R.id.radio_units_imperial);
+        showUnitsChoice(settings.isImperialUnitsEnabled());
+        view.findViewById(R.id.row_units_metric).setOnClickListener(v -> chooseImperial(false));
+        view.findViewById(R.id.row_units_imperial).setOnClickListener(v -> chooseImperial(true));
+
+        MaterialButton btnReset = view.findViewById(R.id.btn_reset_recipes);
+        btnReset.setOnClickListener(v -> resetSampleRecipes(btnReset));
+    }
+
+    private void chooseImperial(boolean imperial) {
+        settings.setImperialUnitsEnabled(imperial);
+        showUnitsChoice(imperial);
+    }
+
+    private void showUnitsChoice(boolean imperial) {
+        radioMetric.setChecked(!imperial);
+        radioImperial.setChecked(imperial);
+    }
+
+    private void resetSampleRecipes(MaterialButton button) {
+        button.setEnabled(false);
+        new RecipeRepository(requireActivity().getApplication()).resetSampleRecipes(() -> {
+            if (getView() == null) {
+                return;
+            }
+            button.setEnabled(true);
+            // Anchored above the bottom navigation so it doesn't cover the tabs
+            Snackbar.make(getView(), R.string.msg_recipes_reset, Snackbar.LENGTH_SHORT)
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
+                    .show();
+        });
     }
 
     /**
@@ -75,11 +115,11 @@ public class SettingsFragment extends Fragment {
      * and keeps the switch UI in sync with the outcome (e.g. if permission was denied).
      */
     private void setExpiringSoonAlertsEnabled(boolean enabled) {
-        prefs.edit().putBoolean(KEY_EXPIRING_SOON_ALERTS, enabled).apply();
+        settings.setExpiringSoonAlertsEnabled(enabled);
         if (switchExpiringSoon.isChecked() != enabled) {
             switchExpiringSoon.setOnCheckedChangeListener(null);
             switchExpiringSoon.setChecked(enabled);
-            switchExpiringSoon.setOnCheckedChangeListener(checkedChangeListener);
+            switchExpiringSoon.setOnCheckedChangeListener(alertsChangeListener);
         }
         if (enabled) {
             ExpiryAlertScheduler.schedule(requireContext());

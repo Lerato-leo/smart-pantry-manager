@@ -3,9 +3,8 @@ package za.ac.richfield.dijong.notify;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
-import za.ac.richfield.dijong.ui.settings.SettingsFragment;
+import za.ac.richfield.dijong.data.AppSettings;
 
 /**
  * Reschedules the expiry-alert alarm after a device reboot, since AlarmManager
@@ -18,11 +17,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             return;
         }
-        SharedPreferences prefs = context.getSharedPreferences(
-                SettingsFragment.PREFS_NAME, Context.MODE_PRIVATE);
-        boolean expiringSoonEnabled = prefs.getBoolean(
-                SettingsFragment.KEY_EXPIRING_SOON_ALERTS, false);
-        if (expiringSoonEnabled) {
+        if (new AppSettings(context).isExpiringSoonAlertsEnabled()) {
             ExpiryAlertScheduler.schedule(context);
         }
     }

@@ -1,44 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Settings: three white cards under small uppercase headings, as in the Dijong design. -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
-    android:fillViewport="true">
+    android:background="@color/cream">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:id="@+id/settings_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/space_md">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/space_lg"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="@dimen/content_max_width">
+        <TextView
+            style="@style/Widget.Dijong.SettingsHeading"
+            android:text="@string/section_pantry_and_recipes" />
 
-            <TextView
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/space_sm"
-                android:text="@string/section_notifications"
-                android:textAllCaps="true"
-                android:textAppearance="?attr/textAppearanceLabelLarge"
-                android:textColor="?attr/colorPrimary" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/space_md">
+                    android:id="@+id/row_expiring_soon_alerts"
+                    style="@style/Widget.Dijong.SettingsRow">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -47,20 +37,12 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/pref_expiring_soon_alerts"
-                            android:textAppearance="?attr/textAppearanceTitleLarge"
-                            android:textColor="?attr/colorOnSurface" />
+                            style="@style/Widget.Dijong.SettingsTitle"
+                            android:text="@string/pref_expiring_soon_alerts" />
 
                         <TextView
-                            android:id="@+id/tv_expiring_soon_summary"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/pref_expiring_soon_alerts_summary"
-                            android:textAppearance="?attr/textAppearanceBodyMedium"
-                            android:textColor="?attr/colorOnSurfaceVariant" />
+                            style="@style/Widget.Dijong.SettingsSummary"
+                            android:text="@string/pref_expiring_soon_alerts_summary" />
 
                     </LinearLayout>
 
@@ -68,15 +50,168 @@
                         android:id="@+id/switch_expiring_soon_alerts"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/space_md"
-                        android:contentDescription="@string/pref_expiring_soon_alerts" />
+                        android:layout_marginStart="12dp" />
 
                 </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+                <View style="@style/Widget.Dijong.Hairline" />
 
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/row_show_almost_there"
+                    style="@style/Widget.Dijong.SettingsRow">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/Widget.Dijong.SettingsTitle"
+                            android:text="@string/pref_show_almost_there" />
+
+                        <TextView
+                            style="@style/Widget.Dijong.SettingsSummary"
+                            android:text="@string/pref_show_almost_there_summary" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_show_almost_there"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            style="@style/Widget.Dijong.SettingsHeading"
+            android:layout_marginTop="20dp"
+            android:text="@string/section_units" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/row_units_metric"
+                    style="@style/Widget.Dijong.SettingsRow"
+                    android:minHeight="64dp">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_units_metric"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="-6dp"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/Widget.Dijong.SettingsTitle"
+                            android:text="@string/pref_units_metric" />
+
+                        <TextView
+                            style="@style/Widget.Dijong.SettingsSummary"
+                            android:text="@string/pref_units_metric_summary" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View style="@style/Widget.Dijong.Hairline" />
+
+                <LinearLayout
+                    android:id="@+id/row_units_imperial"
+                    style="@style/Widget.Dijong.SettingsRow"
+                    android:minHeight="64dp">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_units_imperial"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="-6dp"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/Widget.Dijong.SettingsTitle"
+                            android:text="@string/pref_units_imperial" />
+
+                        <TextView
+                            style="@style/Widget.Dijong.SettingsSummary"
+                            android:text="@string/pref_units_imperial_summary" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            style="@style/Widget.Dijong.SettingsHeading"
+            android:layout_marginTop="20dp"
+            android:text="@string/section_sample_data" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/space_md">
+
+                <TextView
+                    style="@style/Widget.Dijong.SettingsSummary"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/sample_data_explanation" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_reset_recipes"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/button_reset_recipes"
+                    app:icon="@drawable/ic_reset"
+                    app:iconGravity="textStart"
+                    app:iconSize="18dp"
+                    app:strokeColor="@color/plum" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -74,9 +74,20 @@
 
     <!-- SettingsFragment -->
     <string name="title_settings">Settings</string>
-    <string name="section_notifications">Notifications</string>
-    <string name="pref_expiring_soon_alerts">Going-off alerts</string>
-    <string name="pref_expiring_soon_alerts_summary">Notify when ingredients are expiring within 3 days</string>
+    <string name="section_pantry_and_recipes">Pantry and recipes</string>
+    <string name="pref_expiring_soon_alerts">Expiring-soon alerts</string>
+    <string name="pref_expiring_soon_alerts_summary">Notify me 3 days before food expires</string>
+    <string name="pref_show_almost_there">Show Almost There list</string>
+    <string name="pref_show_almost_there_summary">Recipes missing just one ingredient</string>
+    <string name="section_units">Units</string>
+    <string name="pref_units_metric">Metric only</string>
+    <string name="pref_units_metric_summary">g, kg, ml, l, tsp, tbsp, cup</string>
+    <string name="pref_units_imperial">Include imperial</string>
+    <string name="pref_units_imperial_summary">Also show oz and lb</string>
+    <string name="section_sample_data">Sample data</string>
+    <string name="sample_data_explanation">Restore the built-in recipes. Your pantry items are not changed.</string>
+    <string name="button_reset_recipes">Reset sample recipes</string>
+    <string name="msg_recipes_reset">Built-in recipes restored</string>
     <string name="notif_channel_name">Going-off alerts</string>
     <string name="notif_expiring_soon_title">Use it before it goes off</string>
 
