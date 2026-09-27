@@ -50,6 +50,14 @@ public final class QuantityFormatter {
         COUNT_UNIT_PLURALS.put("cup", "cups");
     }
 
+    /**
+     * A recipe amount: like {@link #formatWithUnit}, but plain counts drop the word "unit",
+     * so an ingredient list reads "Onion 1" and "Egg 2" rather than "Onion 1 unit".
+     */
+    public static String formatRecipeAmount(double quantity, String unit) {
+        return "unit".equals(unit) ? format(quantity) : formatWithUnit(quantity, unit);
+    }
+
     /** "800 g", "3 units", "1 can", or just "3" when there's no unit. */
     public static String formatWithUnit(double quantity, String unit) {
         String amount = format(quantity);

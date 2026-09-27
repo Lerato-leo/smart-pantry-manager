@@ -45,4 +45,12 @@ public class QuantityFormatterTest {
         assertEquals("2 L", QuantityFormatter.formatWithUnit(2, "l"));
         assertEquals("250 ml", QuantityFormatter.formatWithUnit(250, "ml"));
     }
+
+    @Test
+    public void formatRecipeAmount_dropsTheWordUnitForCounts() {
+        assertEquals("1", QuantityFormatter.formatRecipeAmount(1, "unit"));
+        assertEquals("2", QuantityFormatter.formatRecipeAmount(2, "unit"));
+        assertEquals("250 g", QuantityFormatter.formatRecipeAmount(250, "g"));
+        assertEquals("2 slices", QuantityFormatter.formatRecipeAmount(2, "slice"));
+    }
 }

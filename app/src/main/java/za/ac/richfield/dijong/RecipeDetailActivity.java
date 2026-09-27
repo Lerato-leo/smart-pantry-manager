@@ -134,7 +134,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         ((TextView) row.findViewById(R.id.tv_ingredient_name)).setText(capitalise(ingredient.getIngredientName()));
         UnitSystem.Amount amount = UnitSystem.forDisplay(ingredient.getRequiredQuantity(), ingredient.getUnit(), imperial);
         ((TextView) row.findViewById(R.id.tv_ingredient_amount)).setText(
-                QuantityFormatter.formatWithUnit(amount.quantity, amount.unit));
+                QuantityFormatter.formatRecipeAmount(amount.quantity, amount.unit));
         return row;
     }
 

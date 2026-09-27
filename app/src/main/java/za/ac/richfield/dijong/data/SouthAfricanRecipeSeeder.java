@@ -61,8 +61,8 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"milk", 500, "ml"},
                 new Object[]{"egg", 3, "unit"},
                 new Object[]{"sugar", 100, "g"},
-                new Object[]{"flour", 30, "g"},
-                new Object[]{"shortcrust pastry", 1, "unit"},
+                new Object[]{"flour", 2, "tbsp"},
+                new Object[]{"shortcrust pastry", 400, "g"},
                 new Object[]{"cinnamon", 1, "tsp"});
 
         addRecipe(recipeDao, "Koeksisters",
@@ -73,7 +73,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"flour", 250, "g"},
                 new Object[]{"sugar", 400, "g"},
                 new Object[]{"water", 250, "ml"},
-                new Object[]{"yeast", 1, "tsp"},
+                new Object[]{"yeast", 10, "g"},
                 new Object[]{"ginger", 1, "tsp"});
 
         addRecipe(recipeDao, "Vetkoek with Curried Mince",
@@ -82,7 +82,7 @@ final class SouthAfricanRecipeSeeder {
                         + "3. Brown the mince with the onion and curry powder. "
                         + "4. Split the vetkoek and spoon in the mince.",
                 new Object[]{"flour", 300, "g"},
-                new Object[]{"yeast", 1, "tsp"},
+                new Object[]{"yeast", 10, "g"},
                 new Object[]{"beef mince", 300, "g"},
                 new Object[]{"onion", 1, "unit"},
                 new Object[]{"curry powder", 1, "tbsp"});
@@ -160,7 +160,7 @@ final class SouthAfricanRecipeSeeder {
                         + "4. Serve at room temperature.",
                 new Object[]{"biltong", 100, "g"},
                 new Object[]{"cheddar cheese", 150, "g"},
-                new Object[]{"crackers", 12, "unit"},
+                new Object[]{"crackers", 100, "g"},
                 new Object[]{"chutney", 2, "tbsp"});
 
         addRecipe(recipeDao, "Ouma's Rusks",
@@ -181,8 +181,8 @@ final class SouthAfricanRecipeSeeder {
                         + "4. Chill and serve over ice.",
                 new Object[]{"rooibos tea bag", 4, "unit"},
                 new Object[]{"water", 1, "L"},
-                new Object[]{"sugar", 30, "g"},
-                new Object[]{"lemon juice", 30, "ml"},
+                new Object[]{"sugar", 2, "tbsp"},
+                new Object[]{"lemon juice", 2, "tbsp"},
                 new Object[]{"honey", 1, "tbsp"});
 
         addRecipe(recipeDao, "Frikkadels",
@@ -194,17 +194,17 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"onion", 1, "unit"},
                 new Object[]{"egg", 1, "unit"},
                 new Object[]{"bread", 2, "slice"},
-                new Object[]{"milk", 50, "ml"});
+                new Object[]{"milk", 3, "tbsp"});
 
         addRecipe(recipeDao, "Peppermint Crisp Tart",
                 "1. Whip the cream until soft peaks form and fold in half the caramel treat. "
                         + "2. Layer the biscuits and cream mixture in a dish, repeating to fill it. "
-                        + "3. Grate the peppermint chocolate over the top layer. "
+                        + "3. Grate the Peppermint Crisp over the top layer. "
                         + "4. Chill for at least four hours before serving.",
                 new Object[]{"tennis biscuits", 200, "g"},
                 new Object[]{"caramel treat", 1, "can"},
                 new Object[]{"cream", 500, "ml"},
-                new Object[]{"peppermint chocolate", 3, "unit"});
+                new Object[]{"peppermint crisp", 150, "g"});
 
         addRecipe(recipeDao, "Pampoenkoekies (Pumpkin Fritters)",
                 "1. Mash the cooked pumpkin and beat in the eggs. "
@@ -236,7 +236,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"butternut", 800, "g"},
                 new Object[]{"onion", 1, "unit"},
                 new Object[]{"vegetable stock", 750, "ml"},
-                new Object[]{"cream", 100, "ml"},
+                new Object[]{"cream", 125, "ml"},
                 new Object[]{"curry powder", 1, "tsp"});
     }
 
