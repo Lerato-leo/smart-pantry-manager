@@ -8,6 +8,10 @@
     <dimen name="card_corner_radius">16dp</dimen>
     <dimen name="content_max_width">560dp</dimen>
 
+    <!-- Bottom padding for lists under the add button (56dp FAB + 24dp margin + 8dp gap),
+         so the last card can scroll clear of it instead of being hidden underneath. -->
+    <dimen name="fab_clearance">88dp</dimen>
+
     <!-- Unit dropdown: 4.5 rows of 48dp plus the popup's 8dp top and bottom padding, so
          four units show and the half-visible fifth hints that the list scrolls, instead
          of the menu covering the whole form. -->
