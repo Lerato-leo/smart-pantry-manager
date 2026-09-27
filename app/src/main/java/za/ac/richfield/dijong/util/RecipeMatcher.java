@@ -15,9 +15,10 @@ import za.ac.richfield.dijong.data.entity.RecipeIngredient;
  * in at least the required quantity, or the whole recipe is ruled out.
  *
  * <p>Quantities are compared in a shared base unit, so 1 kg of flour covers a recipe asking for
- * 500 g, and a 750 ml bottle of oil covers 2 tbsp. Conversion never crosses between mass and
- * volume, though: grams never satisfy a millilitre requirement, since that would mean guessing
- * the ingredient's density.
+ * 500 g, and a 750 ml bottle of oil covers 2 tbsp. Mass and volume are only converted into each
+ * other for the handful of ingredients in {@link #GRAMS_PER_MILLILITRE}: things recipes measure
+ * in spoons but shops sell by weight, like curry powder or chutney. For anything else, grams
+ * never satisfy a millilitre requirement, since that would mean guessing the density.
  *
  * <p>This class touches nothing Android-specific, so it can be exercised with plain JUnit.
  */
@@ -51,6 +52,27 @@ public final class RecipeMatcher {
         MILLILITRES_PER_UNIT.put("tablespoon", 15.0);
         MILLILITRES_PER_UNIT.put("cup", 250.0);
         MILLILITRES_PER_UNIT.put("fluid_ounce", 29.57);
+    }
+
+    /**
+     * Approximate weight of one millilitre of ingredients that recipes measure with spoons
+     * but people buy and stock by weight: a 100 g packet of curry powder should cover a recipe
+     * asking for 1 tbsp (about 6 g). Values are typical kitchen densities; being a few percent
+     * out only matters when the pantry holds almost exactly the amount a recipe needs.
+     */
+    private static final Map<String, Double> GRAMS_PER_MILLILITRE = new HashMap<>();
+
+    static {
+        GRAMS_PER_MILLILITRE.put("curry powder", 0.42);
+        GRAMS_PER_MILLILITRE.put("cinnamon", 0.52);
+        GRAMS_PER_MILLILITRE.put("ginger", 0.36);
+        GRAMS_PER_MILLILITRE.put("sugar", 0.85);
+        GRAMS_PER_MILLILITRE.put("flour", 0.53);
+        GRAMS_PER_MILLILITRE.put("yeast", 0.6);
+        GRAMS_PER_MILLILITRE.put("butter", 0.96);
+        GRAMS_PER_MILLILITRE.put("honey", 1.42);
+        GRAMS_PER_MILLILITRE.put("apricot jam", 1.33);
+        GRAMS_PER_MILLILITRE.put("chutney", 1.2);
     }
 
     private RecipeMatcher() {
@@ -262,11 +284,11 @@ public final class RecipeMatcher {
      * is enough, the full required amount when there is none at all.
      */
     private static double missingQuantity(RecipeIngredient needed, Map<String, Double> onHandByKey) {
-        String key = stockKey(needed.getIngredientName(), needed.getUnit());
-        Double available = onHandByKey.get(key);
+        Double available = availableInRecipeBase(needed, onHandByKey);
         // A mass/volume mismatch (the recipe wants grams, the pantry has millilitres of the
-        // same ingredient) lands on a different key, so it reads as "don't have it" rather
-        // than guessing a conversion that could suggest an uncookable recipe as ready.
+        // same ingredient) lands on a different key, so unless the ingredient has a known
+        // density it reads as "don't have it" rather than guessing a conversion that could
+        // suggest an uncookable recipe as ready.
         if (available == null) {
             return needed.getRequiredQuantity();
         }
@@ -278,6 +300,33 @@ public final class RecipeMatcher {
         // reported in grams even if the pantry stocks the ingredient in kilograms.
         double baseUnitsPerRecipeUnit = required / needed.getRequiredQuantity();
         return (required - available) / baseUnitsPerRecipeUnit;
+    }
+
+    /**
+     * How much of an ingredient the pantry holds, in the base unit the recipe measures it in
+     * (grams or millilitres), or null if there's none it can be compared with. Stock kept by
+     * weight counts toward a spoon measure, and the other way round, for ingredients listed
+     * in {@link #GRAMS_PER_MILLILITRE}.
+     */
+    private static Double availableInRecipeBase(RecipeIngredient needed, Map<String, Double> onHandByKey) {
+        String name = normalizeIngredientName(needed.getIngredientName());
+        String recipeBase = baseUnit(needed.getUnit());
+        Double sameUnit = onHandByKey.get(name + KEY_JOINER + recipeBase);
+
+        Double density = GRAMS_PER_MILLILITRE.get(name);
+        Double converted = null;
+        if (density != null && BASE_VOLUME_UNIT.equals(recipeBase)) {
+            Double grams = onHandByKey.get(name + KEY_JOINER + BASE_MASS_UNIT);
+            converted = grams == null ? null : grams / density;
+        } else if (density != null && BASE_MASS_UNIT.equals(recipeBase)) {
+            Double millilitres = onHandByKey.get(name + KEY_JOINER + BASE_VOLUME_UNIT);
+            converted = millilitres == null ? null : millilitres * density;
+        }
+
+        if (sameUnit == null) {
+            return converted;
+        }
+        return converted == null ? sameUnit : sameUnit + converted;
     }
 
     /** Filters a recipe catalogue down to the ones the current stock can actually produce. */

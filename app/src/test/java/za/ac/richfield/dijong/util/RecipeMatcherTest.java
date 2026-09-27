@@ -198,6 +198,34 @@ public class RecipeMatcherTest {
     }
 
     @Test
+    public void canMakeRecipe_spoonMeasureMatchesStockKeptByWeight() {
+        // Curry powder is sold by weight but measured in spoons: 1 tbsp is about 6 g
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Curry powder", 1, "tbsp"));
+
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("curry powder", 100, "g"))));
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("curry powder", 5, "g"))));
+    }
+
+    @Test
+    public void canMakeRecipe_weightMatchesStockKeptInSpoons() {
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Sugar", 30, "g"));
+
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("sugar", 3, "tbsp"))));
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry(pantryItem("sugar", 2, "tbsp"))));
+    }
+
+    @Test
+    public void canMakeRecipe_addsStockKeptInBothWeightAndSpoons() {
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Chutney", 3, "tbsp"));
+
+        // 1 tbsp in spoons plus 30 g (about 1.7 tbsp) by weight is more than 2 but less than 3
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients,
+                pantry(pantryItem("chutney", 1, "tbsp"), pantryItem("chutney", 30, "g"))));
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients,
+                pantry(pantryItem("chutney", 1, "tbsp"), pantryItem("chutney", 40, "g"))));
+    }
+
+    @Test
     public void canMakeRecipe_exactQuantityAfterConversionIsEnough() {
         // 0.3 kg -> 300.00000000000006 g in floating point; 300 g must still count as enough.
         List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Beef", 0.3, "kg"));
