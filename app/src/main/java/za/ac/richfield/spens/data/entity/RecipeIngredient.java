@@ -1,19 +1,48 @@
-package za.ac.richfield.smartpantry.model;
+package za.ac.richfield.spens.data.entity;
+
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
 /**
- * Represents an ingredient in a recipe.
+ * Represents a single required ingredient for a {@link Recipe}. Rows are deleted
+ * automatically when their parent recipe is deleted (ON DELETE CASCADE).
  */
+@Entity(
+        tableName = "recipe_ingredients",
+        foreignKeys = @ForeignKey(
+                entity = Recipe.class,
+                parentColumns = "id",
+                childColumns = "recipeId",
+                onDelete = ForeignKey.CASCADE),
+        indices = @Index("recipeId")
+)
 public class RecipeIngredient {
+
+    @PrimaryKey(autoGenerate = true)
     private long id;
+
     private long recipeId;
+
+    @NonNull
+    @ColumnInfo(name = "ingredient_name")
     private String ingredientName;
+
+    @ColumnInfo(name = "required_quantity")
     private double requiredQuantity;
+
     private String unit;
 
     public RecipeIngredient() {
+        this.ingredientName = "";
     }
 
-    public RecipeIngredient(long id, long recipeId, String ingredientName, double requiredQuantity, String unit) {
+    @Ignore
+    public RecipeIngredient(long id, long recipeId, @NonNull String ingredientName, double requiredQuantity, String unit) {
         this.id = id;
         this.recipeId = recipeId;
         this.ingredientName = ingredientName;
@@ -37,11 +66,12 @@ public class RecipeIngredient {
         this.recipeId = recipeId;
     }
 
+    @NonNull
     public String getIngredientName() {
         return ingredientName;
     }
 
-    public void setIngredientName(String ingredientName) {
+    public void setIngredientName(@NonNull String ingredientName) {
         this.ingredientName = ingredientName;
     }
 

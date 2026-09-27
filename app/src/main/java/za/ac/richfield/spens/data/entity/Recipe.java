@@ -1,24 +1,36 @@
-package za.ac.richfield.smartpantry.model;
+package za.ac.richfield.spens.data.entity;
 
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 /**
- * Represents a recipe.
+ * Represents a recipe. Ingredients live in a separate table; see {@link RecipeIngredient}
+ * and {@link za.ac.richfield.spens.data.RecipeWithIngredients}.
  */
+@Entity(tableName = "recipes")
 public class Recipe {
+
+    @PrimaryKey(autoGenerate = true)
     private long id;
+
+    @NonNull
     private String name;
+
+    @ColumnInfo(name = "prep_steps")
     private String prepSteps;
-    private List<RecipeIngredient> ingredients;
 
     public Recipe() {
+        this.name = "";
     }
 
-    public Recipe(long id, String name, String prepSteps, List<RecipeIngredient> ingredients) {
+    @Ignore
+    public Recipe(long id, @NonNull String name, String prepSteps) {
         this.id = id;
         this.name = name;
         this.prepSteps = prepSteps;
-        this.ingredients = ingredients;
     }
 
     public long getId() {
@@ -29,11 +41,12 @@ public class Recipe {
         this.id = id;
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
@@ -45,21 +58,12 @@ public class Recipe {
         this.prepSteps = prepSteps;
     }
 
-    public List<RecipeIngredient> getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(List<RecipeIngredient> ingredients) {
-        this.ingredients = ingredients;
-    }
-
     @Override
     public String toString() {
         return "Recipe{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", prepSteps='" + prepSteps + '\'' +
-                ", ingredients=" + ingredients +
                 '}';
     }
 }

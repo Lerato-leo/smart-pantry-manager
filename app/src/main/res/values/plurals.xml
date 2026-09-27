@@ -1,0 +1,6 @@
+<resources>
+    <plurals name="recipe_ingredient_count">
+        <item quantity="one">%d ingredient</item>
+        <item quantity="other">%d ingredients</item>
+    </plurals>
+</resources>

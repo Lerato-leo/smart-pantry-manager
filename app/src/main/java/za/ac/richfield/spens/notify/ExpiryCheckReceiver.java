@@ -1,4 +1,4 @@
-package za.ac.richfield.smartpantry.notify;
+package za.ac.richfield.spens.notify;
 
 import android.Manifest;
 import android.app.NotificationChannel;
@@ -13,78 +13,65 @@ import android.os.Build;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import za.ac.richfield.smartpantry.MainActivity;
-import za.ac.richfield.smartpantry.R;
-import za.ac.richfield.smartpantry.db.DatabaseHelper;
-import za.ac.richfield.smartpantry.model.PantryItem;
+import za.ac.richfield.spens.MainActivity;
+import za.ac.richfield.spens.R;
+import za.ac.richfield.spens.data.SpensDatabase;
+import za.ac.richfield.spens.data.entity.PantryItem;
+import za.ac.richfield.spens.util.ExpiryDateConverter;
 
 /**
- * Checks the pantry for items expiring within {@link #EXPIRY_WINDOW_DAYS} days
- * and posts a single summary notification when any are found.
+ * Runs once a day (see {@link ExpiryAlertScheduler}) and posts one notification listing every
+ * stock item expiring within {@link ExpiryDateConverter#EXPIRY_SOON_WINDOW_DAYS} days, rather
+ * than spamming a separate notification per item.
  */
 public class ExpiryCheckReceiver extends BroadcastReceiver {
 
     public static final String CHANNEL_ID = "expiring_soon_alerts";
     private static final int NOTIFICATION_ID = 2001;
-    private static final int EXPIRY_WINDOW_DAYS = 3;
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        List<PantryItem> expiringItems = findExpiringItems(context);
-        if (expiringItems.isEmpty()) {
-            return;
-        }
-        postNotification(context, expiringItems);
+        Context appContext = context.getApplicationContext();
+        PendingResult pendingResult = goAsync();
+        SpensDatabase.databaseWriteExecutor.execute(() -> {
+            try {
+                List<PantryItem> expiringItems = findExpiringItems(appContext);
+                if (!expiringItems.isEmpty()) {
+                    postNotification(appContext, expiringItems);
+                }
+            } finally {
+                pendingResult.finish();
+            }
+        });
     }
 
     private List<PantryItem> findExpiringItems(Context context) {
-        List<PantryItem> expiringItems = new ArrayList<>();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+        long today = ExpiryDateConverter.todayEpochDay();
+        long cutoff = today + ExpiryDateConverter.EXPIRY_SOON_WINDOW_DAYS;
 
-        Calendar cutoff = Calendar.getInstance();
-        cutoff.add(Calendar.DAY_OF_YEAR, EXPIRY_WINDOW_DAYS);
-        Date cutoffDate = endOfDay(cutoff.getTime());
-        Date today = startOfDay(new Date());
-
-        DatabaseHelper dbHelper = new DatabaseHelper(context);
-        List<PantryItem> allItems = dbHelper.getAllPantryItems();
-        dbHelper.close();
-
-        for (PantryItem item : allItems) {
-            String expiryDate = item.getExpiryDate();
-            if (expiryDate == null || expiryDate.isEmpty()) {
-                continue;
-            }
-            try {
-                Date parsed = dateFormat.parse(expiryDate);
-                if (parsed != null && !parsed.before(today) && !parsed.after(cutoffDate)) {
-                    expiringItems.add(item);
-                }
-            } catch (ParseException e) {
-                // Skip items with an unparseable expiry date.
+        List<PantryItem> aboutToGoOff = new ArrayList<>();
+        List<PantryItem> wholeSpens = SpensDatabase.getInstance(context).pantryDao().getAllItemsSync();
+        for (PantryItem candidate : wholeSpens) {
+            Long expiryDate = candidate.getExpiryDate();
+            if (expiryDate != null && expiryDate >= today && expiryDate <= cutoff) {
+                aboutToGoOff.add(candidate);
             }
         }
-        return expiringItems;
+        return aboutToGoOff;
     }
 
     private void postNotification(Context context, List<PantryItem> expiringItems) {
         createNotificationChannel(context);
 
-        StringBuilder names = new StringBuilder();
+        StringBuilder itemNamesJoined = new StringBuilder();
         for (int i = 0; i < expiringItems.size(); i++) {
             if (i > 0) {
-                names.append(", ");
+                itemNamesJoined.append(", ");
             }
-            names.append(expiringItems.get(i).getName());
+            itemNamesJoined.append(expiringItems.get(i).getName());
         }
 
         Intent openApp = new Intent(context, MainActivity.class);
@@ -94,8 +81,8 @@ public class ExpiryCheckReceiver extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_pantry)
                 .setContentTitle(context.getString(R.string.notif_expiring_soon_title))
-                .setContentText(names.toString())
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(names.toString()))
+                .setContentText(itemNamesJoined.toString())
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(itemNamesJoined.toString()))
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true);
 
@@ -127,25 +114,5 @@ public class ExpiryCheckReceiver extends BroadcastReceiver {
                 NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription(context.getString(R.string.pref_expiring_soon_alerts_summary));
         notificationManager.createNotificationChannel(channel);
-    }
-
-    private static Date startOfDay(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTime();
-    }
-
-    private static Date endOfDay(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        calendar.set(Calendar.MILLISECOND, 999);
-        return calendar.getTime();
     }
 }

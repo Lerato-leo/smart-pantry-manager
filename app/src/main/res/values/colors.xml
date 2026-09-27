@@ -1,9 +1,24 @@
 <resources>
-    <color name="purple_200">#BB86FC</color>
-    <color name="purple_500">#6200EE</color>
-    <color name="purple_700">#3700B3</color>
-    <color name="teal_200">#03DAC5</color>
-    <color name="teal_700">#018786</color>
-    <color name="black">#FF000000</color>
+    <!-- Brand: fresh, kitchen-garden palette. Primary echoes the launcher icon. -->
+    <color name="brand_primary">#2E7D32</color>
+    <color name="brand_primary_dark">#1B5E20</color>
+    <color name="brand_primary_container">#DCEFDD</color>
+    <color name="brand_on_primary_container">#0D2B10</color>
+
+    <color name="brand_secondary">#F2994A</color>
+    <color name="brand_on_secondary">#3A2200</color>
+
+    <color name="surface">#FFFBF4</color>
+    <color name="surface_container">#FFFFFF</color>
+    <color name="on_surface">#211E16</color>
+    <color name="on_surface_variant">#6E6656</color>
+    <color name="outline">#E6DFD0</color>
+
+    <!-- Expiry status signal: the app's one recurring visual device. -->
+    <color name="status_fresh">#2E7D32</color>
+    <color name="status_soon">#F2994A</color>
+    <color name="status_overdue">#C6412C</color>
+
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
 </resources>

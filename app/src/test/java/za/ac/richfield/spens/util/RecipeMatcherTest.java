@@ -1,4 +1,4 @@
-package za.ac.richfield.smartpantry.util;
+package za.ac.richfield.spens.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,13 +6,16 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import za.ac.richfield.smartpantry.model.Recipe;
-import za.ac.richfield.smartpantry.model.RecipeIngredient;
+import za.ac.richfield.spens.data.RecipeWithIngredients;
+import za.ac.richfield.spens.data.entity.PantryItem;
+import za.ac.richfield.spens.data.entity.Recipe;
+import za.ac.richfield.spens.data.entity.RecipeIngredient;
 
 public class RecipeMatcherTest {
 
@@ -66,8 +69,19 @@ public class RecipeMatcherTest {
     }
 
     @Test
+    public void buildPantryQuantityMap_sumsQuantitiesForSameNormalizedKey() {
+        List<PantryItem> items = Arrays.asList(
+                pantryItem("Tomato", 1, "kg"),
+                pantryItem("Tomatoes", 2, "kg"));
+
+        Map<String, Double> map = RecipeMatcher.buildPantryQuantityMap(items);
+
+        assertEquals(3.0, map.get("tomato#kilogram"), 0.0001);
+    }
+
+    @Test
     public void canMakeRecipe_trueWhenAllIngredientsSufficient() {
-        Recipe recipe = recipeWith(
+        List<RecipeIngredient> ingredients = Arrays.asList(
                 ingredient("Tomatoes", 2, "kg"),
                 ingredient("Onion", 1, "unit"));
 
@@ -75,57 +89,62 @@ public class RecipeMatcherTest {
         pantry.put("tomato#kilogram", 3.0);
         pantry.put("onion#unit", 2.0);
 
-        assertTrue(RecipeMatcher.canMakeRecipe(recipe, pantry));
+        assertTrue(RecipeMatcher.canMakeRecipe(ingredients, pantry));
     }
 
     @Test
     public void canMakeRecipe_falseWhenIngredientMissing() {
-        Recipe recipe = recipeWith(ingredient("Tomatoes", 2, "kg"));
-        Map<String, Double> pantry = new HashMap<>();
-
-        assertFalse(RecipeMatcher.canMakeRecipe(recipe, pantry));
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Tomatoes", 2, "kg"));
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, new HashMap<>()));
     }
 
     @Test
     public void canMakeRecipe_falseWhenQuantityInsufficient() {
-        Recipe recipe = recipeWith(ingredient("Tomatoes", 2, "kg"));
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Tomatoes", 2, "kg"));
         Map<String, Double> pantry = new HashMap<>();
         pantry.put("tomato#kilogram", 1.0);
 
-        assertFalse(RecipeMatcher.canMakeRecipe(recipe, pantry));
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry));
     }
 
     @Test
     public void canMakeRecipe_falseWhenUnitMismatch() {
-        Recipe recipe = recipeWith(ingredient("Tomatoes", 2, "kg"));
+        List<RecipeIngredient> ingredients = Arrays.asList(ingredient("Tomatoes", 2, "kg"));
         Map<String, Double> pantry = new HashMap<>();
         pantry.put("tomato#gram", 5000.0);
 
-        assertFalse(RecipeMatcher.canMakeRecipe(recipe, pantry));
+        assertFalse(RecipeMatcher.canMakeRecipe(ingredients, pantry));
     }
 
     @Test
-    public void canMakeRecipe_falseForNullRecipe() {
-        assertFalse(RecipeMatcher.canMakeRecipe(null, new HashMap<>()));
+    public void canMakeRecipe_falseForEmptyIngredientList() {
+        assertFalse(RecipeMatcher.canMakeRecipe(new ArrayList<>(), new HashMap<>()));
     }
 
     @Test
     public void getMatchingRecipes_returnsOnlyMakeableRecipes() {
-        Recipe makeable = recipeWith(ingredient("Onion", 1, "unit"));
-        Recipe notMakeable = recipeWith(ingredient("Beef", 1, "kg"));
-        List<Recipe> recipes = Arrays.asList(makeable, notMakeable);
+        RecipeWithIngredients makeable = recipeWith(1L, "Makeable", ingredient("Onion", 1, "unit"));
+        RecipeWithIngredients notMakeable = recipeWith(2L, "Not makeable", ingredient("Beef", 1, "kg"));
+        List<RecipeWithIngredients> recipes = Arrays.asList(makeable, notMakeable);
 
         Map<String, Double> pantry = new HashMap<>();
         pantry.put("onion#unit", 5.0);
 
-        List<Recipe> matches = RecipeMatcher.getMatchingRecipes(recipes, pantry);
+        List<RecipeWithIngredients> matches = RecipeMatcher.getMatchingRecipes(recipes, pantry);
 
         assertEquals(1, matches.size());
         assertEquals(makeable, matches.get(0));
     }
 
-    private static Recipe recipeWith(RecipeIngredient... ingredients) {
-        return new Recipe(1L, "Test Recipe", "Test steps", Arrays.asList(ingredients));
+    private static PantryItem pantryItem(String name, double quantity, String unit) {
+        return new PantryItem(1L, name, quantity, unit, null);
+    }
+
+    private static RecipeWithIngredients recipeWith(long id, String name, RecipeIngredient... ingredients) {
+        RecipeWithIngredients recipe = new RecipeWithIngredients();
+        recipe.recipe = new Recipe(id, name, "Test steps");
+        recipe.ingredients = Arrays.asList(ingredients);
+        return recipe;
     }
 
     private static RecipeIngredient ingredient(String name, double quantity, String unit) {

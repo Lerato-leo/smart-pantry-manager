@@ -1,11 +1,11 @@
-package za.ac.richfield.smartpantry.notify;
+package za.ac.richfield.spens.notify;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import za.ac.richfield.smartpantry.ui.settings.SettingsFragment;
+import za.ac.richfield.spens.ui.settings.SettingsFragment;
 
 /**
  * Reschedules the expiry-alert alarm after a device reboot, since AlarmManager

@@ -1,4 +1,4 @@
-package za.ac.richfield.smartpantry.notify;
+package za.ac.richfield.spens.notify;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -13,6 +13,7 @@ import java.util.Calendar;
 public final class ExpiryAlertScheduler {
 
     private static final int REQUEST_CODE = 1001;
+    /** Morning check-in time, chosen so a "use it today" nudge lands before breakfast planning. */
     private static final int CHECK_HOUR_OF_DAY = 9;
 
     private ExpiryAlertScheduler() {

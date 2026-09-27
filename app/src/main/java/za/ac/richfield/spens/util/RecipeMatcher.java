@@ -1,65 +1,67 @@
-package za.ac.richfield.smartpantry.util;
+package za.ac.richfield.spens.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import za.ac.richfield.smartpantry.model.Recipe;
-import za.ac.richfield.smartpantry.model.RecipeIngredient;
+import za.ac.richfield.spens.data.RecipeWithIngredients;
+import za.ac.richfield.spens.data.entity.PantryItem;
+import za.ac.richfield.spens.data.entity.RecipeIngredient;
 
 /**
- * Utility class for matching recipes against pantry ingredients.
- * Implements a strict-matching rule: a recipe can be made only if every required ingredient
- * is present in the pantry in sufficient quantity, with normalized names and units.
- * This class has no Android dependencies and can be easily unit-tested.
+ * Decides which recipes a spens can currently produce, by comparing what a recipe calls for
+ * against what's on hand. The rule is deliberately strict: every ingredient must be present in
+ * at least the required quantity and a compatible unit, or the whole recipe is ruled out. There's
+ * no partial-match "you're close!" mode and no unit conversion across measurement systems
+ * (grams never satisfy a millilitre requirement, even for the same ingredient).
+ *
+ * <p>This class touches nothing Android-specific, so it can be exercised with plain JUnit.
  */
-public class RecipeMatcher {
+public final class RecipeMatcher {
+
+    /** Joins a normalized ingredient name and unit into one lookup key for the stock map. */
+    private static final String KEY_JOINER = "#";
 
     private RecipeMatcher() {
-        // Prevent instantiation
+        // Static helpers only.
     }
 
     /**
-     * Normalizes an ingredient name for comparison.
-     * Converts to lowercase, trims whitespace, and removes common plural suffixes.
-     *
-     * @param name the ingredient name to normalize
-     * @return the normalized name
+     * Reduces an ingredient name to a comparable form: lowercase, trimmed, and singular where
+     * a simple English plural is detected. "Tomatoes" and "tomato" must collapse to the same
+     * key so a pantry entry written either way still matches a recipe.
      */
-    public static String normalizeIngredientName(String name) {
-        if (name == null) {
+    public static String normalizeIngredientName(String rawName) {
+        if (rawName == null) {
             return "";
         }
-        String normalized = name.trim().toLowerCase();
-        // Remove trailing 's' or 'es' for simple plurals (e.g., tomatoes -> tomato)
-        // But be careful not to remove 's' from words that are singular and end with 's' (e.g., glasses).
-        // We'll apply a simple rule: if the word ends with 'ies', replace with 'y'; else if ends with 'es', remove 'es'; else if ends with 's' and not 'ss', remove 's'.
-        if (normalized.endsWith("ies")) {
-            normalized = normalized.substring(0, normalized.length() - 3) + "y";
-        } else if (normalized.endsWith("es")) {
-            normalized = normalized.substring(0, normalized.length() - 2);
-        } else if (normalized.endsWith("s") && !normalized.endsWith("ss")) {
-            normalized = normalized.substring(0, normalized.length() - 1);
+        String singularised = rawName.trim().toLowerCase();
+        if (singularised.endsWith("ies")) {
+            // berries -> berry
+            singularised = singularised.substring(0, singularised.length() - 3) + "y";
+        } else if (singularised.endsWith("es")) {
+            // tomatoes -> tomato
+            singularised = singularised.substring(0, singularised.length() - 2);
+        } else if (singularised.endsWith("s") && !singularised.endsWith("ss")) {
+            // onions -> onion, but glass stays glass
+            singularised = singularised.substring(0, singularised.length() - 1);
         }
-        return normalized;
+        return singularised;
     }
 
     /**
-     * Normalizes a unit for comparison.
-     * Converts to lowercase, trims whitespace, and maps common variations to a standard form.
-     *
-     * @param unit the unit to normalize (may be null or empty)
-     * @return the normalized unit, or empty string if the input was null or empty
+     * Collapses the many ways a cook might spell a unit ("g", "gram", "Grams") down to one
+     * canonical spelling, so quantities recorded under any of those spellings still add up.
+     * Anything not in this kitchen's usual vocabulary is passed through unchanged rather than
+     * rejected, since a home cook's own shorthand shouldn't break matching.
      */
-    public static String normalizeUnit(String unit) {
-        if (unit == null || unit.isEmpty()) {
+    public static String normalizeUnit(String rawUnit) {
+        if (rawUnit == null || rawUnit.isEmpty()) {
             return "";
         }
-        String normalized = unit.trim().toLowerCase();
-        // Map common unit variations
-        switch (normalized) {
+        String candidate = rawUnit.trim().toLowerCase();
+        switch (candidate) {
             case "g":
             case "gram":
             case "grams":
@@ -130,54 +132,66 @@ public class RecipeMatcher {
             case "pinches":
                 return "pinch";
             default:
-                // If we don't recognize the unit, return it as-is (lowercase and trimmed)
-                return normalized;
+                return candidate;
         }
     }
 
+    /** Builds the lookup key shared by pantry stock and recipe requirements alike. */
+    private static String stockKey(String ingredientName, String unit) {
+        return normalizeIngredientName(ingredientName) + KEY_JOINER + normalizeUnit(unit);
+    }
+
     /**
-     * Checks if a recipe can be made with the given pantry ingredients.
-     * The pantry is represented as a map where the key is "normalizedIngredientName#normalizedUnit"
-     * and the value is the total quantity available for that ingredient-unit pair.
-     *
-     * @param recipe the recipe to check
-     * @param pantry a map of normalized ingredient#unit to available quantity
-     * @return true if the recipe can be made, false otherwise
+     * Totals up everything on the shelf into one map, so a recipe check is a handful of lookups
+     * rather than scanning the whole pantry per ingredient. Two entries for the same ingredient
+     * and unit (e.g. two cartons of milk logged separately) are summed rather than overwriting
+     * one another.
      */
-    public static boolean canMakeRecipe(Recipe recipe, Map<String, Double> pantry) {
-        if (recipe == null || recipe.getIngredients() == null) {
+    public static Map<String, Double> buildPantryQuantityMap(List<PantryItem> stock) {
+        Map<String, Double> onHandByKey = new HashMap<>();
+        if (stock == null) {
+            return onHandByKey;
+        }
+        for (PantryItem stockedItem : stock) {
+            String key = stockKey(stockedItem.getName(), stockedItem.getUnit());
+            onHandByKey.merge(key, stockedItem.getQuantity(), Double::sum);
+        }
+        return onHandByKey;
+    }
+
+    /**
+     * @param requiredIngredients what the recipe calls for
+     * @param onHandByKey         the spens's current stock, as built by {@link #buildPantryQuantityMap}
+     * @return true only if every single ingredient clears its required quantity
+     */
+    public static boolean canMakeRecipe(List<RecipeIngredient> requiredIngredients, Map<String, Double> onHandByKey) {
+        if (requiredIngredients == null || requiredIngredients.isEmpty()) {
             return false;
         }
-        for (RecipeIngredient ingredient : recipe.getIngredients()) {
-            String normName = normalizeIngredientName(ingredient.getIngredientName());
-            String normUnit = normalizeUnit(ingredient.getUnit());
-            String key = normName + "#" + normUnit;
-            double required = ingredient.getRequiredQuantity();
-
-            Double available = pantry.get(key);
-            if (available == null || available < required) {
-                // If the exact unit doesn't match, we could try to convert, but the requirement
-                // says to normalize basic units and then compare. We'll treat mismatched units as not available.
+        for (RecipeIngredient needed : requiredIngredients) {
+            String key = stockKey(needed.getIngredientName(), needed.getUnit());
+            Double available = onHandByKey.get(key);
+            // A unit mismatch (e.g. the recipe wants grams but the pantry has millilitres of
+            // the same ingredient) is treated as "don't have it" rather than guessing a
+            // conversion, since guessing wrong would suggest an uncookable recipe as ready.
+            if (available == null || available < needed.getRequiredQuantity()) {
                 return false;
             }
         }
         return true;
     }
 
-    /**
-     * Returns a list of recipes that can be made with the given pantry.
-     *
-     * @param recipes the list of all recipes
-     * @param pantry a map of normalized ingredient#unit to available quantity (from pantry items)
-     * @return a list of recipes that can be made
-     */
-    public static List<Recipe> getMatchingRecipes(List<Recipe> recipes, Map<String, Double> pantry) {
-        List<Recipe> matches = new java.util.ArrayList<>();
-        for (Recipe recipe : recipes) {
-            if (canMakeRecipe(recipe, pantry)) {
-                matches.add(recipe);
+    /** Filters a recipe catalogue down to the ones the current stock can actually produce. */
+    public static List<RecipeWithIngredients> getMatchingRecipes(List<RecipeWithIngredients> catalogue, Map<String, Double> onHandByKey) {
+        List<RecipeWithIngredients> cookableNow = new ArrayList<>();
+        if (catalogue == null) {
+            return cookableNow;
+        }
+        for (RecipeWithIngredients candidate : catalogue) {
+            if (canMakeRecipe(candidate.getIngredients(), onHandByKey)) {
+                cookableNow.add(candidate);
             }
         }
-        return matches;
+        return cookableNow;
     }
 }
