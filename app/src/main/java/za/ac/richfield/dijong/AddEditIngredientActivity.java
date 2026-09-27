@@ -221,7 +221,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         etExpiryDate.setText(ExpiryDateConverter.formatEpochDay(item.getExpiryDate()));
         showCategory(item.getCategoryEnum());
 
-        String unit = item.getUnit();
+        String unit = QuantityFormatter.displayUnit(item.getUnit());
         setUpUnitDropdown(unit);
         if (unit != null && unitOptions.contains(unit)) {
             actvUnit.setText(unit, false);

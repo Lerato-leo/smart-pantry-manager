@@ -105,6 +105,12 @@ public class RecipeMatcherTest {
     }
 
     @Test
+    public void normalizeUnit_treatsCapitalLAsLitres() {
+        assertEquals("liter", RecipeMatcher.normalizeUnit("L"));
+        assertEquals(RecipeMatcher.normalizeUnit("l"), RecipeMatcher.normalizeUnit("L"));
+    }
+
+    @Test
     public void toBaseQuantity_convertsIntoBaseUnit() {
         assertEquals(1500.0, RecipeMatcher.toBaseQuantity(1.5, "kg"), 0.0001);
         assertEquals(30.0, RecipeMatcher.toBaseQuantity(2, "tbsp"), 0.0001);

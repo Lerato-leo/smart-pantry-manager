@@ -32,6 +32,14 @@ public final class QuantityFormatter {
      */
     private static final Map<String, String> COUNT_UNIT_PLURALS = new HashMap<>();
 
+    /**
+     * Litres are written with a capital L, the way they're printed on packaging, so they
+     * can't be mistaken for the number 1. Items saved before this still say "l".
+     */
+    public static String displayUnit(String unit) {
+        return "l".equals(unit) ? "L" : unit;
+    }
+
     static {
         COUNT_UNIT_PLURALS.put("unit", "units");
         COUNT_UNIT_PLURALS.put("slice", "slices");
@@ -48,6 +56,7 @@ public final class QuantityFormatter {
         if (unit == null || unit.trim().isEmpty()) {
             return amount;
         }
+        unit = displayUnit(unit);
         String plural = COUNT_UNIT_PLURALS.get(unit);
         boolean isOne = amount.equals("1");
         return amount + " " + (plural != null && !isOne ? plural : unit);

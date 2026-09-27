@@ -38,4 +38,11 @@ public class QuantityFormatterTest {
         assertEquals("800 g", QuantityFormatter.formatWithUnit(800, "g"));
         assertEquals("2 tbsp", QuantityFormatter.formatWithUnit(2, "tbsp"));
     }
+
+    @Test
+    public void formatWithUnit_writesLitresWithCapitalL() {
+        assertEquals("1 L", QuantityFormatter.formatWithUnit(1, "L"));
+        assertEquals("2 L", QuantityFormatter.formatWithUnit(2, "l"));
+        assertEquals("250 ml", QuantityFormatter.formatWithUnit(250, "ml"));
+    }
 }

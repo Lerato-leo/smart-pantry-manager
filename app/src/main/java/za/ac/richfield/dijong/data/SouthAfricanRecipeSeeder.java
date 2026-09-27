@@ -17,7 +17,7 @@ final class SouthAfricanRecipeSeeder {
     }
 
     static void populateRecipes(RecipeDao recipeDao) {
-        addRecipe(recipeDao, "Pap en Chakalaka",
+        addRecipe(recipeDao, "Pap and Chakalaka",
                 "1. Bring the water to the boil and stir in the maize meal to make stiff pap. "
                         + "2. Fry the onion and green pepper until soft. "
                         + "3. Stir in the baked beans and curry powder and simmer for 10 minutes. "
@@ -180,7 +180,7 @@ final class SouthAfricanRecipeSeeder {
                         + "3. Add the lemon juice and top up with cold water. "
                         + "4. Chill and serve over ice.",
                 new Object[]{"rooibos tea bag", 4, "unit"},
-                new Object[]{"water", 1, "l"},
+                new Object[]{"water", 1, "L"},
                 new Object[]{"sugar", 30, "g"},
                 new Object[]{"lemon juice", 30, "ml"},
                 new Object[]{"honey", 1, "tbsp"});
