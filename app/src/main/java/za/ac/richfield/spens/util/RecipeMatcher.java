@@ -239,17 +239,34 @@ public final class RecipeMatcher {
             return false;
         }
         for (RecipeIngredient needed : requiredIngredients) {
-            String key = stockKey(needed.getIngredientName(), needed.getUnit());
-            Double available = onHandByKey.get(key);
-            double required = toBaseQuantity(needed.getRequiredQuantity(), needed.getUnit());
-            // A mass/volume mismatch (the recipe wants grams, the pantry has millilitres of the
-            // same ingredient) lands on a different key, so it reads as "don't have it" rather
-            // than guessing a conversion that could suggest an uncookable recipe as ready.
-            if (available == null || available + QUANTITY_TOLERANCE < required) {
+            if (missingQuantity(needed, onHandByKey) > 0) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * How much more of one ingredient the pantry needs, in the recipe's own unit: 0 when there
+     * is enough, the full required amount when there is none at all.
+     */
+    private static double missingQuantity(RecipeIngredient needed, Map<String, Double> onHandByKey) {
+        String key = stockKey(needed.getIngredientName(), needed.getUnit());
+        Double available = onHandByKey.get(key);
+        // A mass/volume mismatch (the recipe wants grams, the pantry has millilitres of the
+        // same ingredient) lands on a different key, so it reads as "don't have it" rather
+        // than guessing a conversion that could suggest an uncookable recipe as ready.
+        if (available == null) {
+            return needed.getRequiredQuantity();
+        }
+        double required = toBaseQuantity(needed.getRequiredQuantity(), needed.getUnit());
+        if (available + QUANTITY_TOLERANCE >= required) {
+            return 0;
+        }
+        // Scale the base-unit gap back into the recipe's unit, so "need 200 g more" is
+        // reported in grams even if the pantry stocks the ingredient in kilograms.
+        double baseUnitsPerRecipeUnit = required / needed.getRequiredQuantity();
+        return (required - available) / baseUnitsPerRecipeUnit;
     }
 
     /** Filters a recipe catalogue down to the ones the current stock can actually produce. */
@@ -264,5 +281,74 @@ public final class RecipeMatcher {
             }
         }
         return cookableNow;
+    }
+
+    /**
+     * Recipes that are exactly one ingredient short, for the separate "Almost there" list.
+     * These are never suggestions: the strict list above stays the only thing that claims a
+     * recipe is cookable. A recipe with enough of everything except one ingredient, or with
+     * one ingredient missing entirely, qualifies; two or more shortfalls do not.
+     */
+    public static List<AlmostThereRecipe> getAlmostThereRecipes(List<RecipeWithIngredients> catalogue, Map<String, Double> onHandByKey) {
+        List<AlmostThereRecipe> oneShort = new ArrayList<>();
+        if (catalogue == null) {
+            return oneShort;
+        }
+        for (RecipeWithIngredients candidate : catalogue) {
+            List<RecipeIngredient> ingredients = candidate.getIngredients();
+            if (ingredients == null || ingredients.isEmpty()) {
+                continue;
+            }
+            RecipeIngredient onlyShortfall = null;
+            double onlyMissingQuantity = 0;
+            int shortfalls = 0;
+            for (RecipeIngredient needed : ingredients) {
+                double missing = missingQuantity(needed, onHandByKey);
+                if (missing > 0) {
+                    shortfalls++;
+                    onlyShortfall = needed;
+                    onlyMissingQuantity = missing;
+                    if (shortfalls > 1) {
+                        break;
+                    }
+                }
+            }
+            if (shortfalls == 1) {
+                oneShort.add(new AlmostThereRecipe(candidate, onlyShortfall, onlyMissingQuantity));
+            }
+        }
+        return oneShort;
+    }
+
+    /** A recipe one ingredient short of cookable, and what it's short of. */
+    public static final class AlmostThereRecipe {
+
+        private final RecipeWithIngredients recipe;
+        private final RecipeIngredient missingIngredient;
+        private final double missingQuantity;
+
+        public AlmostThereRecipe(RecipeWithIngredients recipe, RecipeIngredient missingIngredient, double missingQuantity) {
+            this.recipe = recipe;
+            this.missingIngredient = missingIngredient;
+            this.missingQuantity = missingQuantity;
+        }
+
+        public RecipeWithIngredients getRecipe() {
+            return recipe;
+        }
+
+        public RecipeIngredient getMissingIngredient() {
+            return missingIngredient;
+        }
+
+        /** How much more is needed, in the missing ingredient's recipe unit. */
+        public double getMissingQuantity() {
+            return missingQuantity;
+        }
+
+        /** True when there's none of the ingredient at all, rather than just not enough. */
+        public boolean isMissingEntirely() {
+            return Math.abs(missingQuantity - missingIngredient.getRequiredQuantity()) < QUANTITY_TOLERANCE;
+        }
     }
 }

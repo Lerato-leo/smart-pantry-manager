@@ -19,6 +19,10 @@
     <color name="status_soon">#F2994A</color>
     <color name="status_overdue">#C6412C</color>
 
+    <!-- "Almost there" section: amber, set apart from the green of ready-to-cook recipes -->
+    <color name="almost_there_accent">#9A5B13</color>
+    <color name="almost_there_container">#FCEBD9</color>
+
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
 </resources>

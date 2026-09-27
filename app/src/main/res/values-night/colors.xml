@@ -18,6 +18,9 @@
     <color name="status_soon">#F2AB6E</color>
     <color name="status_overdue">#E27461</color>
 
+    <color name="almost_there_accent">#F5B97A</color>
+    <color name="almost_there_container">#4A3218</color>
+
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
 </resources>

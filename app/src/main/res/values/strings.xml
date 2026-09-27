@@ -37,6 +37,11 @@
     <string name="title_recipes">What Can I Cook</string>
     <string name="empty_recipes_title">Nothing on the braai yet</string>
     <string name="empty_recipes_message">Stock a few more ingredients in your spens and we\'ll tell you what\'s cookable.</string>
+    <string name="section_ready_to_cook">Ready to cook</string>
+    <string name="section_almost_there">Almost there</string>
+    <string name="section_almost_there_hint">One ingredient short, so not suggested yet. Add the missing item to unlock these.</string>
+    <string name="format_missing_ingredient">Missing %1$s %2$s</string>
+    <string name="format_need_more_ingredient">Need %1$s more %2$s</string>
 
     <!-- SettingsFragment -->
     <string name="title_settings">Settings</string>

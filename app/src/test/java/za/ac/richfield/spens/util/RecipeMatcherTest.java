@@ -216,6 +216,64 @@ public class RecipeMatcherTest {
         assertEquals(makeable, matches.get(0));
     }
 
+    @Test
+    public void getAlmostThereRecipes_includesRecipeWithOneIngredientMissing() {
+        RecipeWithIngredients pap = recipeWith(1L, "Pap",
+                ingredient("Maize meal", 500, "g"),
+                ingredient("Water", 1, "l"));
+
+        List<RecipeMatcher.AlmostThereRecipe> almost = RecipeMatcher.getAlmostThereRecipes(
+                Arrays.asList(pap), pantry(pantryItem("water", 2, "l")));
+
+        assertEquals(1, almost.size());
+        assertEquals("Maize meal", almost.get(0).getMissingIngredient().getIngredientName());
+        assertEquals(500.0, almost.get(0).getMissingQuantity(), 0.0001);
+        assertTrue(almost.get(0).isMissingEntirely());
+    }
+
+    @Test
+    public void getAlmostThereRecipes_reportsShortfallInRecipeUnit() {
+        RecipeWithIngredients bread = recipeWith(1L, "Bread",
+                ingredient("Flour", 500, "g"),
+                ingredient("Yeast", 1, "unit"));
+
+        List<RecipeMatcher.AlmostThereRecipe> almost = RecipeMatcher.getAlmostThereRecipes(
+                Arrays.asList(bread), pantry(pantryItem("flour", 0.3, "kg"), pantryItem("yeast", 1, "unit")));
+
+        assertEquals(1, almost.size());
+        assertEquals(200.0, almost.get(0).getMissingQuantity(), 0.0001);
+        assertFalse(almost.get(0).isMissingEntirely());
+    }
+
+    @Test
+    public void getAlmostThereRecipes_excludesCookableAndTwoShortRecipes() {
+        RecipeWithIngredients cookable = recipeWith(1L, "Cookable", ingredient("Onion", 1, "unit"));
+        RecipeWithIngredients twoShort = recipeWith(2L, "Two short",
+                ingredient("Onion", 1, "unit"),
+                ingredient("Beef", 1, "kg"),
+                ingredient("Tomato", 2, "unit"));
+
+        List<RecipeMatcher.AlmostThereRecipe> almost = RecipeMatcher.getAlmostThereRecipes(
+                Arrays.asList(cookable, twoShort), pantry(pantryItem("onion", 1, "unit")));
+
+        assertTrue(almost.isEmpty());
+    }
+
+    @Test
+    public void getAlmostThereRecipes_neverOverlapsStrictMatches() {
+        RecipeWithIngredients a = recipeWith(1L, "A", ingredient("Egg", 2, "unit"));
+        RecipeWithIngredients b = recipeWith(2L, "B", ingredient("Egg", 2, "unit"), ingredient("Milk", 250, "ml"));
+        List<RecipeWithIngredients> catalogue = Arrays.asList(a, b);
+        Map<String, Double> stock = pantry(pantryItem("eggs", 6, "unit"));
+
+        List<RecipeWithIngredients> strict = RecipeMatcher.getMatchingRecipes(catalogue, stock);
+        List<RecipeMatcher.AlmostThereRecipe> almost = RecipeMatcher.getAlmostThereRecipes(catalogue, stock);
+
+        assertEquals(Arrays.asList(a), strict);
+        assertEquals(1, almost.size());
+        assertEquals(b, almost.get(0).getRecipe());
+    }
+
     private static Map<String, Double> pantry(PantryItem... items) {
         return RecipeMatcher.buildPantryQuantityMap(Arrays.asList(items));
     }
