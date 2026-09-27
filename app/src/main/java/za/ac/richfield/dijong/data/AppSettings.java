@@ -13,6 +13,7 @@ public final class AppSettings {
     public static final String KEY_EXPIRING_SOON_ALERTS = "expiring_soon_alerts";
     public static final String KEY_SHOW_ALMOST_THERE = "show_almost_there";
     public static final String KEY_IMPERIAL_UNITS = "imperial_units";
+    public static final String KEY_LOADED_RECIPE_VERSION = "loaded_recipe_version";
 
     private final SharedPreferences prefs;
 
@@ -47,5 +48,16 @@ public final class AppSettings {
 
     public void setImperialUnitsEnabled(boolean enabled) {
         prefs.edit().putBoolean(KEY_IMPERIAL_UNITS, enabled).apply();
+    }
+
+    /** Which version of the built-in recipes is in the database; 0 before the first load. */
+    public int getLoadedRecipeVersion() {
+        return prefs.getInt(KEY_LOADED_RECIPE_VERSION, 0);
+    }
+
+    public void setLoadedRecipeVersion(int version) {
+        // commit(), not apply(): this runs on a background thread right after the reload, and
+        // the version must be on disk before the app can be killed, or it would reload again.
+        prefs.edit().putInt(KEY_LOADED_RECIPE_VERSION, version).commit();
     }
 }

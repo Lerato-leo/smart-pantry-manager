@@ -32,6 +32,7 @@ public abstract class DijongDatabase extends RoomDatabase {
     public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(WRITE_THREAD_POOL_SIZE);
 
     private static volatile DijongDatabase instance;
+    private static Context appContext;
 
     /**
      * Version 2 adds a category to each pantry item. Existing rows keep all their data and
@@ -53,7 +54,8 @@ public abstract class DijongDatabase extends RoomDatabase {
         if (instance == null) {
             synchronized (DijongDatabase.class) {
                 if (instance == null) {
-                    instance = Room.databaseBuilder(context.getApplicationContext(),
+                    appContext = context.getApplicationContext();
+                    instance = Room.databaseBuilder(appContext,
                                     DijongDatabase.class, DATABASE_NAME)
                             .addCallback(seedingCallback)
                             .addMigrations(MIGRATION_1_2)
@@ -65,15 +67,29 @@ public abstract class DijongDatabase extends RoomDatabase {
     }
 
     /**
-     * The underlying SQLite file is only actually created on first access, which happens
-     * lazily after {@link #getInstance} has already assigned {@link #instance}, so it's
-     * safe for this callback to read that field directly.
+     * Checks the built-in recipes every time the database opens, not just when it's first
+     * created: if a first launch was interrupted halfway through loading them, or a newer
+     * version of the app ships changed recipes, they're put right on the next launch.
+     *
+     * <p>The database is only actually opened on first access, which happens after
+     * {@link #getInstance} has assigned {@link #instance}, so it's safe to read it here.
      */
     private static final RoomDatabase.Callback seedingCallback = new RoomDatabase.Callback() {
         @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-            databaseWriteExecutor.execute(() -> SouthAfricanRecipeSeeder.populateRecipes(instance.recipeDao()));
+        public void onOpen(@NonNull SupportSQLiteDatabase db) {
+            super.onOpen(db);
+            databaseWriteExecutor.execute(() -> {
+                AppSettings settings = new AppSettings(appContext);
+                if (SouthAfricanRecipeSeeder.ensureRecipesLoaded(instance, settings.getLoadedRecipeVersion())) {
+                    settings.setLoadedRecipeVersion(SouthAfricanRecipeSeeder.SEED_VERSION);
+                }
+            });
         }
     };
+
+    /** Reloads the built-in recipes (Settings > Reset sample recipes). Call off the main thread. */
+    public void resetSampleRecipes() {
+        SouthAfricanRecipeSeeder.replaceAllRecipes(this);
+        new AppSettings(appContext).setLoadedRecipeVersion(SouthAfricanRecipeSeeder.SEED_VERSION);
+    }
 }

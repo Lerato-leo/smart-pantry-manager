@@ -28,7 +28,7 @@
             android:textAppearance="@style/TextAppearance.Dijong.TitleMedium"
             android:textColor="@color/ink"
             android:textSize="15sp"
-            tools:text="Pap en Chakalaka" />
+            tools:text="Pap and Chakalaka" />
 
         <TextView
             android:id="@+id/tv_missing_ingredient"

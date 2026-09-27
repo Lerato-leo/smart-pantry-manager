@@ -41,11 +41,7 @@ public class RecipeRepository {
      */
     public void resetSampleRecipes(Runnable onDone) {
         DijongDatabase.databaseWriteExecutor.execute(() -> {
-            database.runInTransaction(() -> {
-                recipeDao.deleteAllIngredients();
-                recipeDao.deleteAllRecipes();
-                SouthAfricanRecipeSeeder.populateRecipes(recipeDao);
-            });
+            database.resetSampleRecipes();
             mainThread.post(onDone);
         });
     }
