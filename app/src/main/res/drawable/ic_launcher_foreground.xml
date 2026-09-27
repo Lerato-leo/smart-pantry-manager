@@ -1,16 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- Dijong pot symbol. The 100-unit artwork is scaled to the central 72dp of the
+     108dp adaptive-icon canvas, the part every launcher mask keeps visible. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,24 C40,24 30,34 30,48 L30,78 C30,80.2 31.8,82 34,82 L74,82 C76.2,82 78,80.2 78,78 L78,48 C78,34 68,24 54,24 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M46,18 L46,30 L42,30 L42,18 Z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M66,18 L66,30 L62,30 L62,18 Z" />
+    <group
+        android:scaleX="0.72"
+        android:scaleY="0.72"
+        android:translateX="18"
+        android:translateY="18">
+        <path
+            android:pathData="M34 64 L30.5 79"
+            android:strokeColor="#FFE0A100"
+            android:strokeWidth="5"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M50 66 L50 80"
+            android:strokeColor="#FFE0A100"
+            android:strokeWidth="5"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M66 64 L69.5 79"
+            android:strokeColor="#FFE0A100"
+            android:strokeWidth="5"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M24 48 H76 C76 62 68 72 50 72 C32 72 24 62 24 48 Z"
+            android:fillColor="#FFE0A100" />
+        <path
+            android:pathData="M23.5,39.0h53.0a3.5,3.5 0 0,1 3.5,3.5v0.0a3.5,3.5 0 0,1 -3.5,3.5h-53.0a3.5,3.5 0 0,1 -3.5,-3.5v-0.0a3.5,3.5 0 0,1 3.5,-3.5z"
+            android:fillColor="#FFE0A100" />
+        <path
+            android:pathData="M29 37 C29 27.5 71 27.5 71 37 Z"
+            android:fillColor="#FFE0A100" />
+        <path
+            android:pathData="M46.5,27.0a3.5,3.5 0 1,0 7.0,0a3.5,3.5 0 1,0 -7.0,0z"
+            android:fillColor="#FFFFF8EE" />
+        <path
+            android:pathData="M41.5,59.5a8.5,8.5 0 1,0 17.0,0a8.5,8.5 0 1,0 -17.0,0z"
+            android:fillColor="#FFFFF8EE" />
+        <path
+            android:pathData="M44.5 64 C44.5 56.5 49 53.5 55.5 53.5 C55.5 61 51 64 44.5 64 Z"
+            android:fillColor="#FF0F766E" />
+        <path
+            android:pathData="M45.8 62.7 L53 55.8"
+            android:strokeColor="#FFFFF8EE"
+            android:strokeWidth="1.3"
+            android:strokeLineCap="round" />
+    </group>
 </vector>

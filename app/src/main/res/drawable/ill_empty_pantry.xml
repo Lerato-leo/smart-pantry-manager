@@ -1,0 +1,42 @@
+<!-- Empty pantry: two jars on a shelf, from the Dijong PantryEmpty design -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="176dp"
+    android:height="144dp"
+    android:viewportWidth="176"
+    android:viewportHeight="144">
+    <path
+        android:pathData="M12.0,128.0a76.0,8.0 0 1,0 152.0,0a76.0,8.0 0 1,0 -152.0,0z"
+        android:fillColor="#FFF3E6D4" />
+    <path
+        android:pathData="M16.0,112.0h144.0a4.0,4.0 0 0,1 4.0,4.0v0.0a4.0,4.0 0 0,1 -4.0,4.0h-144.0a4.0,4.0 0 0,1 -4.0,-4.0v-0.0a4.0,4.0 0 0,1 4.0,-4.0z"
+        android:fillColor="#FF4A1942" />
+    <path
+        android:pathData="M40.0,52.0h28.0a10.0,10.0 0 0,1 10.0,10.0v40.0a10.0,10.0 0 0,1 -10.0,10.0h-28.0a10.0,10.0 0 0,1 -10.0,-10.0v-40.0a10.0,10.0 0 0,1 10.0,-10.0z"
+        android:fillColor="#FFFFFFFF"
+        android:strokeColor="#FF4A1942"
+        android:strokeWidth="3" />
+    <path
+        android:pathData="M38.0,40.0h32.0a4.0,4.0 0 0,1 4.0,4.0v6.0a4.0,4.0 0 0,1 -4.0,4.0h-32.0a4.0,4.0 0 0,1 -4.0,-4.0v-6.0a4.0,4.0 0 0,1 4.0,-4.0z"
+        android:fillColor="#FFE0A100" />
+    <path
+        android:pathData="M40 92 H68"
+        android:strokeColor="#FFEFE3D3"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M102.0,68.0h34.0a10.0,10.0 0 0,1 10.0,10.0v24.0a10.0,10.0 0 0,1 -10.0,10.0h-34.0a10.0,10.0 0 0,1 -10.0,-10.0v-24.0a10.0,10.0 0 0,1 10.0,-10.0z"
+        android:fillColor="#FFFFFFFF"
+        android:strokeColor="#FF4A1942"
+        android:strokeWidth="3" />
+    <path
+        android:pathData="M100.0,58.0h38.0a4.0,4.0 0 0,1 4.0,4.0v4.0a4.0,4.0 0 0,1 -4.0,4.0h-38.0a4.0,4.0 0 0,1 -4.0,-4.0v-4.0a4.0,4.0 0 0,1 4.0,-4.0z"
+        android:fillColor="#FFE0A100" />
+    <path
+        android:pathData="M119 58 C119 44 128 36 140 36 C140 49 132 58 119 58 Z"
+        android:fillColor="#FF0F766E" />
+    <path
+        android:pathData="M122 55 L134 43"
+        android:strokeColor="#FFFFF8EE"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+</vector>

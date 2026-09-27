@@ -1,0 +1,46 @@
+<!-- Nothing to cook yet: an empty potjie, from the Dijong CookEmpty design -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="168dp"
+    android:height="136dp"
+    android:viewportWidth="168"
+    android:viewportHeight="136">
+    <path
+        android:pathData="M14.0,124.0a70.0,8.0 0 1,0 140.0,0a70.0,8.0 0 1,0 -140.0,0z"
+        android:fillColor="#FFF3E6D4" />
+    <path
+        android:pathData="M58 104 L52 120"
+        android:strokeColor="#FF0F766E"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M110 104 L116 120"
+        android:strokeColor="#FF0F766E"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M40 66 H128 C128 92 112 110 84 110 C56 110 40 92 40 66 Z"
+        android:fillColor="#FFFFFFFF"
+        android:strokeColor="#FF0F766E"
+        android:strokeWidth="3" />
+    <path
+        android:pathData="M37.0,56.0h94.0a5.0,5.0 0 0,1 5.0,5.0v0.0a5.0,5.0 0 0,1 -5.0,5.0h-94.0a5.0,5.0 0 0,1 -5.0,-5.0v-0.0a5.0,5.0 0 0,1 5.0,-5.0z"
+        android:fillColor="#FF0F766E" />
+    <path
+        android:pathData="M66 44 C62 38 70 34 66 26"
+        android:strokeColor="#FF9FCFC9"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M84 44 C80 36 88 32 84 22"
+        android:strokeColor="#FF9FCFC9"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M102 44 C98 38 106 34 102 26"
+        android:strokeColor="#FF9FCFC9"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M74.0,86.0a10.0,10.0 0 1,0 20.0,0a10.0,10.0 0 1,0 -20.0,0z"
+        android:fillColor="#FFE0A100" />
+</vector>

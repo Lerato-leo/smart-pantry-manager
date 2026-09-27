@@ -14,11 +14,10 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
+            style="@style/Widget.Dijong.Toolbar.Detail"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.Dijong.PopupOverlay"
-            app:titleTextAppearance="@style/TextAppearance.Dijong.ToolbarTitle" />
+            android:layout_height="64dp"
+            app:popupTheme="@style/Theme.Dijong.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

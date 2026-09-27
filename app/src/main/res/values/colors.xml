@@ -1,28 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand: fresh, kitchen-garden palette. Primary echoes the launcher icon. -->
-    <color name="brand_primary">#2E7D32</color>
-    <color name="brand_primary_dark">#1B5E20</color>
-    <color name="brand_primary_container">#DCEFDD</color>
-    <color name="brand_on_primary_container">#0D2B10</color>
+    <!-- Dijong brand: plum for structure, amber for "act on this soon", teal for "good to go". -->
+    <color name="plum">#4A1942</color>
+    <color name="plum_soft_text">#EBD9E6</color>
+    <color name="amber">#E0A100</color>
+    <color name="teal">#0F766E</color>
+    <color name="teal_container">#D5EBE8</color>
+    <color name="teal_soft">#9FCFC9</color>
 
-    <color name="brand_secondary">#F2994A</color>
-    <color name="brand_on_secondary">#3A2200</color>
+    <color name="ink">#2B1B24</color>
+    <color name="ink_muted">#6B5A63</color>
+    <color name="cream">#FFF8EE</color>
+    <color name="card">#FFFFFF</color>
+    <color name="hairline">#EFE3D3</color>
+    <color name="field_outline">#9C8A92</color>
+    <color name="field_placeholder">#8A7A82</color>
+    <color name="error">#C2410C</color>
+    <color name="snackbar">#2B1B24</color>
+    <color name="snackbar_action">#F4C9EA</color>
+    <color name="overdue">#B91C1C</color>
+    <color name="white">#FFFFFF</color>
 
-    <color name="surface">#FFFBF4</color>
-    <color name="surface_container">#FFFFFF</color>
-    <color name="on_surface">#211E16</color>
-    <color name="on_surface_variant">#6E6656</color>
-    <color name="outline">#E6DFD0</color>
+    <!-- Ingredient categories: soft background + strong foreground for icon and chip -->
+    <color name="category_vegetables_bg">#EEF4E3</color>
+    <color name="category_vegetables_fg">#4D7C0F</color>
+    <color name="category_fruit_bg">#F3E8FF</color>
+    <color name="category_fruit_fg">#7E22CE</color>
+    <color name="category_meat_bg">#FBE7EC</color>
+    <color name="category_meat_fg">#BE123C</color>
+    <color name="category_dairy_bg">#E6EEFD</color>
+    <color name="category_dairy_fg">#2563EB</color>
+    <color name="category_grains_bg">#FBEEDD</color>
+    <color name="category_grains_fg">#B45309</color>
+    <color name="category_spices_bg">#FDE8E1</color>
+    <color name="category_spices_fg">#C2410C</color>
+    <color name="category_canned_bg">#E8ECF1</color>
+    <color name="category_canned_fg">#475569</color>
+    <color name="category_other_bg">#F1ECE6</color>
+    <color name="category_other_fg">#6B5A63</color>
 
-    <!-- Expiry status signal: the app's one recurring visual device. -->
-    <color name="status_fresh">#2E7D32</color>
-    <color name="status_soon">#F2994A</color>
-    <color name="status_overdue">#C6412C</color>
-
-    <!-- "Almost there" section: amber, set apart from the green of ready-to-cook recipes -->
-    <color name="almost_there_accent">#9A5B13</color>
-    <color name="almost_there_container">#FCEBD9</color>
-
-    <color name="white">#FFFFFFFF</color>
+    <!-- Legacy names still used by screens not yet moved to the Dijong design -->
+    <color name="brand_primary">@color/plum</color>
+    <color name="brand_primary_container">@color/teal_container</color>
+    <color name="brand_on_primary_container">@color/ink</color>
+    <color name="brand_secondary">@color/amber</color>
+    <color name="brand_on_secondary">@color/ink</color>
+    <color name="surface">@color/cream</color>
+    <color name="surface_container">@color/card</color>
+    <color name="on_surface">@color/ink</color>
+    <color name="on_surface_variant">@color/ink_muted</color>
+    <color name="outline">@color/hairline</color>
+    <color name="status_fresh">@color/teal</color>
+    <color name="status_soon">@color/amber</color>
+    <color name="status_overdue">@color/overdue</color>
+    <color name="almost_there_accent">#8A5A00</color>
+    <color name="almost_there_container">#FCEFD0</color>
     <color name="black">#FF000000</color>
 </resources>
