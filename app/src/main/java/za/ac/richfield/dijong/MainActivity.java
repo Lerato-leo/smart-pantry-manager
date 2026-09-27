@@ -28,45 +28,55 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int itemId = item.getItemId();
-            int titleResId = 0;
             if (itemId == R.id.navigation_pantry) {
                 selectedFragment = new PantryListFragment();
-                titleResId = R.string.title_pantry;
             } else if (itemId == R.id.navigation_recipes) {
                 selectedFragment = new SuggestedRecipesFragment();
-                titleResId = R.string.title_recipes;
             } else if (itemId == R.id.navigation_settings) {
                 selectedFragment = new SettingsFragment();
-                titleResId = R.string.title_settings;
             }
             if (selectedFragment != null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.nav_host_fragment, selectedFragment)
                         .commit();
-                showScreenTitle(titleResId);
+                showScreenTitle(itemId);
                 return true;
             }
             return false;
         });
 
-        // Set default fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.nav_host_fragment, new PantryListFragment())
                     .commit();
-            showScreenTitle(R.string.title_pantry);
         }
+        // After a rotation the fragment is restored by the system but the toolbar isn't,
+        // so the title is always set from whichever tab is selected.
+        showScreenTitle(bottomNavigationView.getSelectedItemId());
     }
 
     /**
-     * Sets the toolbar title, showing the app's tagline as a subtitle only on the home
-     * (pantry) tab so it doesn't repeat and clutter the other two screens.
+     * Sets the toolbar title for a tab, with the app's tagline as a subtitle only on the
+     * home (pantry) tab. What Can I Cook fills in its own subtitle once it knows how many
+     * ingredients there are, via {@link #setScreenSubtitle}.
      */
-    private void showScreenTitle(int titleResId) {
+    private void showScreenTitle(int tabItemId) {
+        int titleResId;
+        if (tabItemId == R.id.navigation_recipes) {
+            titleResId = R.string.title_recipes;
+        } else if (tabItemId == R.id.navigation_settings) {
+            titleResId = R.string.title_settings;
+        } else {
+            titleResId = R.string.title_pantry;
+        }
         setTitle(titleResId);
+        setScreenSubtitle(titleResId == R.string.title_pantry ? getString(R.string.app_tagline) : null);
+    }
+
+    /** Lets the hosted tab put a live line under the title, e.g. an ingredient count. */
+    public void setScreenSubtitle(CharSequence subtitle) {
         if (getSupportActionBar() != null) {
-            boolean isHomeTab = titleResId == R.string.title_pantry;
-            getSupportActionBar().setSubtitle(isHomeTab ? R.string.app_tagline : 0);
+            getSupportActionBar().setSubtitle(subtitle);
         }
     }
 }
