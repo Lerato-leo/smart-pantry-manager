@@ -1,22 +1,27 @@
-# Spens
+# Dijong
 
-Spens (Afrikaans for pantry/larder) is an Android app for tracking what's in your kitchen and
-figuring out what you can actually cook with it. Add ingredients as you buy them, and the app
-matches your stock against a small cookbook of 20 South African dishes, only suggesting a recipe
-once every ingredient it needs is on the shelf in enough quantity. It also reminds you a few
-days before something goes off, so less of it ends up in the bin.
+*Cook what you have. Waste nothing.*
+
+Dijong is an Android app for tracking what's in your kitchen and figuring out what you can
+actually cook with it. Add ingredients as you buy them, and the app matches your stock against a
+cookbook of 20 South African dishes, only suggesting a recipe once every ingredient it needs is
+on the shelf in enough quantity. It also flags food that's about to go off, so less of it ends up
+in the bin.
 
 ## Features
 
-- **My Spens**: add, edit and delete pantry items (name, quantity, unit, optional expiry date).
-  Items expiring soon or already past their date are colour-coded. Delete with the bin button
-  (asks first) or by swiping a card away (with Undo).
+- **My Dijong**: add, edit and delete pantry items (name, quantity, unit, category, optional
+  expiry date). Each card shows its category, and anything expiring soon or already expired gets
+  a "Tomorrow" / "In 2 days" / "Expired" badge and moves to the top. Delete from the edit screen
+  or by swiping a card away; both offer Undo.
 - **What Can I Cook**: the recipes you can make right now, and nothing else. Below them, a
-  separate **Almost there** section lists recipes exactly one ingredient short and says what's
-  missing, e.g. "Missing 1 can baked beans" or "Need 200 g more flour".
-- **Recipe detail**: the full ingredient list and method for any recipe.
-- **Settings**: turn on going-off alerts, a daily notification about ingredients expiring
-  within 3 days.
+  separate **Almost there** panel lists recipes exactly one ingredient short and says what's
+  missing, e.g. "Missing: baked beans" or "Need 200 g more flour".
+- **Recipe**: every ingredient ticked if your pantry has enough, or marked "Missing", and the
+  method as numbered steps.
+- **Settings**: expiring-soon alerts (a daily notification about food expiring within 3 days),
+  show or hide the Almost There list, metric-only or metric-and-imperial units, and a button to
+  restore the built-in recipes.
 
 ## Database: SQLite, through Room
 
@@ -33,7 +38,9 @@ typo in a column name fails the build instead of crashing on a device), generate
 boilerplate, and returns `LiveData`, so screens refresh themselves whenever the data changes.
 
 The schema has three tables: `pantry_items`, `recipes`, and `recipe_ingredients` (each row
-belongs to one recipe). The 20 recipes are seeded on first launch.
+belongs to one recipe). The 20 recipes are seeded on first launch. The database is at version 2:
+version 2 added a `category` column to `pantry_items`, and `MIGRATION_1_2` adds it without losing
+existing items (checked by `MigrationTest`).
 
 ## How recipe matching works
 
@@ -52,8 +59,8 @@ people actually type things:
 
 Screens follow MVVM: each `Fragment`/`Activity` owns a `ViewModel`, which goes through a
 `Repository` to reach the `Dao`. All writes run on a background executor so nothing blocks the
-main thread. `RecipeMatcher` has no Android dependencies, which is what makes it possible to
-unit test without an emulator.
+main thread. `RecipeMatcher` and the other helpers in `util` have no Android dependencies, which
+is what makes it possible to unit test them without an emulator.
 
 ## Running it
 
@@ -66,10 +73,16 @@ unit test without an emulator.
 ## Tests
 
 - Unit tests (no device needed): `./gradlew testDebugUnitTest`. These cover the matching rules,
-  unit conversion, the "almost there" list, quantity formatting and expiry date parsing.
+  unit conversion, the Almost There list, expiry badges and sorting, date parsing, quantity
+  formatting and splitting recipe methods into steps.
 - Database tests (needs a running emulator or device): `./gradlew connectedDebugAndroidTest`.
-  These run pantry create/read/update/delete against a real Room database and check the seeded
-  recipes. Note that this uninstalls the app afterwards, which clears its data.
+  These run pantry create/read/update/delete against a real Room database, check the seeded
+  recipes, and upgrade a version 1 database to version 2. Note that this uninstalls the app
+  afterwards, which clears its data.
+
+## Screenshots
+
+Screenshots of every screen are in [`docs/screenshots`](docs/screenshots).
 
 ## Notes
 
