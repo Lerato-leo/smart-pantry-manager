@@ -79,7 +79,7 @@ public class ExpiryCheckReceiver extends BroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_pantry)
+                .setSmallIcon(R.drawable.ic_nav_pantry)
                 .setContentTitle(context.getString(R.string.notif_expiring_soon_title))
                 .setContentText(itemNamesJoined.toString())
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(itemNamesJoined.toString()))

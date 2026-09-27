@@ -22,11 +22,7 @@
     <string name="msg_ingredient_updated">Ingredient updated</string>
     <string name="msg_ingredient_deleted">%s deleted</string>
     <string name="action_undo">Undo</string>
-    <string name="dialog_delete_title">Delete %s?</string>
-    <string name="dialog_delete_message">This removes it from your pantry. Recipes that need it will stop being suggested.</string>
-    <string name="content_desc_delete_item">Delete %s</string>
     <string name="msg_ingredient_added">Ingredient added</string>
-    <string name="format_expires_on">Expires %s</string>
     <string name="content_desc_pick_date">Pick expiry date</string>
     <string name="placeholder_quantity">e.g. 800</string>
     <string name="placeholder_date">DD/MM/YYYY</string>
@@ -88,12 +84,6 @@
     <string name="sample_data_explanation">Restore the built-in recipes. Your pantry items are not changed.</string>
     <string name="button_reset_recipes">Reset sample recipes</string>
     <string name="msg_recipes_reset">Built-in recipes restored</string>
-    <string name="notif_channel_name">Going-off alerts</string>
+    <string name="notif_channel_name">Expiring-soon alerts</string>
     <string name="notif_expiring_soon_title">Use it before it goes off</string>
-
-    <!-- Common -->
-    <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>
-    <string name="delete">Delete</string>
-    <string name="edit">Edit</string>
 </resources>

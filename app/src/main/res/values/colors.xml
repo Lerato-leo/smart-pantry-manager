@@ -6,7 +6,6 @@
     <color name="amber">#E0A100</color>
     <color name="teal">#0F766E</color>
     <color name="teal_container">#D5EBE8</color>
-    <color name="teal_soft">#9FCFC9</color>
 
     <color name="ink">#2B1B24</color>
     <color name="ink_muted">#6B5A63</color>
@@ -38,22 +37,4 @@
     <color name="category_canned_fg">#475569</color>
     <color name="category_other_bg">#F1ECE6</color>
     <color name="category_other_fg">#6B5A63</color>
-
-    <!-- Legacy names still used by screens not yet moved to the Dijong design -->
-    <color name="brand_primary">@color/plum</color>
-    <color name="brand_primary_container">@color/teal_container</color>
-    <color name="brand_on_primary_container">@color/ink</color>
-    <color name="brand_secondary">@color/amber</color>
-    <color name="brand_on_secondary">@color/ink</color>
-    <color name="surface">@color/cream</color>
-    <color name="surface_container">@color/card</color>
-    <color name="on_surface">@color/ink</color>
-    <color name="on_surface_variant">@color/ink_muted</color>
-    <color name="outline">@color/hairline</color>
-    <color name="status_fresh">@color/teal</color>
-    <color name="status_soon">@color/amber</color>
-    <color name="status_overdue">@color/overdue</color>
-    <color name="almost_there_accent">#8A5A00</color>
-    <color name="almost_there_container">#FCEFD0</color>
-    <color name="black">#FF000000</color>
 </resources>
