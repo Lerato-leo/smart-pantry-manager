@@ -20,8 +20,8 @@ in the bin.
 - **Recipe**: every ingredient ticked if your pantry has enough, or marked "Missing", and the
   method as numbered steps.
 - **Settings**: expiring-soon alerts (a daily notification about food expiring within 3 days),
-  show or hide the Almost There list, metric-only or metric-and-imperial units, and a button to
-  restore the built-in recipes.
+  show or hide the Almost There list, metric or imperial units (one or the other: the unit menu
+  and recipe amounts follow the choice), and a button to restore the built-in recipes.
 
 ## Database: SQLite, through Room
 
@@ -51,8 +51,13 @@ people actually type things:
 - **Names** are compared case-insensitively and singularised: "Tomatoes" matches "tomato",
   "Apples" matches "apple", "Onions" matches "onion".
 - **Units** are converted within the same kind of measure: mass (mg, g, kg, oz, lb) and volume
-  (ml, l, tsp, tbsp, cup). So 1 kg of flour covers a recipe needing 500 g, and 750 ml of oil
-  covers 2 tbsp. Mass and volume are never mixed, since that would mean guessing the density.
+  (ml, L, fl oz, tsp, tbsp, cup). So 1 kg of flour covers a recipe needing 500 g, and 750 ml of
+  oil covers 2 tbsp.
+- **Spoons and grams** are converted for ingredients that recipes measure in spoons but shops
+  sell by weight (curry powder, cinnamon, ginger, sugar, flour, yeast, butter, honey, apricot
+  jam, chutney), using a typical density for each: a 100 g packet of curry powder covers
+  "1 tbsp". For everything else, mass and volume are never mixed, since that would mean
+  guessing the density.
 - Several entries for the same ingredient are added together (500 g + 1 kg = 1.5 kg).
 
 ## Architecture
