@@ -65,6 +65,13 @@ public class PantryDaoTest {
     }
 
     @Test
+    public void insert_keepsCategory() {
+        pantryDao.insert(new PantryItem(0, "Cream", 250, "ml", null, IngredientCategory.DAIRY));
+
+        assertEquals(IngredientCategory.DAIRY, pantryDao.getAllItemsSync().get(0).getCategoryEnum());
+    }
+
+    @Test
     public void update_changesExistingRowInPlace() {
         long id = pantryDao.insert(new PantryItem(0, "Onion", 1, "unit", null));
 

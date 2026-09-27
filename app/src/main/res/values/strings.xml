@@ -31,6 +31,17 @@
     <string name="empty_pantry_title">Your pantry is empty</string>
     <string name="empty_pantry_message">Tap + to add your first ingredient and start tracking what you have.</string>
 
+    <!-- Ingredient categories -->
+    <string name="hint_category">Category</string>
+    <string name="category_vegetables">Vegetables</string>
+    <string name="category_fruit">Fruit</string>
+    <string name="category_meat">Meat</string>
+    <string name="category_dairy">Dairy</string>
+    <string name="category_grains">Grains</string>
+    <string name="category_spices">Spices</string>
+    <string name="category_canned">Canned goods</string>
+    <string name="category_other">Other</string>
+
     <!-- RecipeDetailActivity -->
     <string name="heading_ingredients">Ingredients</string>
     <string name="heading_prep_steps">Preparation steps</string>

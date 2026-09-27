@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.concurrent.ExecutorService;
@@ -19,7 +20,7 @@ import za.ac.richfield.dijong.data.entity.RecipeIngredient;
 
 @Database(
         entities = {PantryItem.class, Recipe.class, RecipeIngredient.class},
-        version = 1,
+        version = 2,
         exportSchema = false
 )
 public abstract class DijongDatabase extends RoomDatabase {
@@ -32,6 +33,18 @@ public abstract class DijongDatabase extends RoomDatabase {
 
     private static volatile DijongDatabase instance;
 
+    /**
+     * Version 2 adds a category to each pantry item. Existing rows keep all their data and
+     * are filed under "Other" until the person edits them.
+     */
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE pantry_items ADD COLUMN category TEXT NOT NULL DEFAULT '"
+                    + IngredientCategory.DEFAULT_KEY + "'");
+        }
+    };
+
     public abstract PantryDao pantryDao();
 
     public abstract RecipeDao recipeDao();
@@ -43,6 +56,7 @@ public abstract class DijongDatabase extends RoomDatabase {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                                     DijongDatabase.class, DATABASE_NAME)
                             .addCallback(seedingCallback)
+                            .addMigrations(MIGRATION_1_2)
                             .build();
                 }
             }

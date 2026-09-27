@@ -7,12 +7,14 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import za.ac.richfield.dijong.data.IngredientCategory;
+
 /**
- * One entry in the pantry: an ingredient, how much of it there is, and (optionally) when it
- * goes off. The expiry date is stored as an epoch day rather than a formatted string so two
- * dates can be compared with a plain {@code long} comparison instead of parsing; see
- * {@link za.ac.richfield.dijong.util.ExpiryDateConverter} for the yyyy-MM-dd round trip the
- * UI actually shows.
+ * One entry in the pantry: an ingredient, how much of it there is, which shelf it belongs
+ * on, and (optionally) when it goes off. The expiry date is stored as an epoch day rather
+ * than a formatted string so two dates can be compared with a plain {@code long} comparison
+ * instead of parsing; see {@link za.ac.richfield.dijong.util.ExpiryDateConverter} for the
+ * round trip to the date the UI shows.
  */
 @Entity(tableName = "pantry_items")
 public class PantryItem {
@@ -31,17 +33,30 @@ public class PantryItem {
     @ColumnInfo(name = "expiry_date")
     private Long expiryDate;
 
+    /** An {@link IngredientCategory} name, e.g. "DAIRY". Added in database version 2. */
+    @NonNull
+    @ColumnInfo(defaultValue = IngredientCategory.DEFAULT_KEY)
+    private String category;
+
     public PantryItem() {
         this.name = "";
+        this.category = IngredientCategory.DEFAULT_KEY;
     }
 
     @Ignore
     public PantryItem(long id, @NonNull String name, double quantity, String unit, @Nullable Long expiryDate) {
+        this(id, name, quantity, unit, expiryDate, IngredientCategory.OTHER);
+    }
+
+    @Ignore
+    public PantryItem(long id, @NonNull String name, double quantity, String unit, @Nullable Long expiryDate,
+                      @NonNull IngredientCategory category) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
         this.unit = unit;
         this.expiryDate = expiryDate;
+        this.category = category.name();
     }
 
     public long getId() {
@@ -86,6 +101,25 @@ public class PantryItem {
         this.expiryDate = expiryDate;
     }
 
+    @NonNull
+    public String getCategory() {
+        return category;
+    }
+
+    /** Room's setter; the UI goes through {@link #setCategory(IngredientCategory)}. */
+    public void setCategory(@NonNull String category) {
+        this.category = category;
+    }
+
+    public void setCategory(@NonNull IngredientCategory category) {
+        this.category = category.name();
+    }
+
+    @NonNull
+    public IngredientCategory getCategoryEnum() {
+        return IngredientCategory.fromKey(category);
+    }
+
     @Override
     public String toString() {
         return "PantryItem{" +
@@ -94,6 +128,7 @@ public class PantryItem {
                 ", quantity=" + quantity +
                 ", unit='" + unit + '\'' +
                 ", expiryDate=" + expiryDate +
+                ", category='" + category + '\'' +
                 '}';
     }
 }
