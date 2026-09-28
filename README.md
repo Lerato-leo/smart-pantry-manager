@@ -121,7 +121,7 @@ is what makes it possible to unit test them without an emulator.
 
 ## Screenshots
 
-Screenshots of every screen are in [`docs/screenshots`](docs/screenshots).
+Screenshots of every screen and core function are in [`docs/screenshots`](docs/screenshots), with a caption for each in its [index](docs/screenshots/README.md).
 
 ## Notes
 
