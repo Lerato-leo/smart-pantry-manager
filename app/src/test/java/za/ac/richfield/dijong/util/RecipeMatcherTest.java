@@ -439,7 +439,7 @@ public class RecipeMatcherTest {
     @Test
     public void getAlmostThereRecipes_notesWhenTheShortfallIsOnlyExpiredStock() {
         long today = 20_000L;
-        RecipeWithIngredients melktert = recipeWith(1L, "Melktert",
+        RecipeWithIngredients milkTart = recipeWith(1L, "Milk Tart",
                 ingredient("Milk", 1, "L"),
                 ingredient("Egg", 3, "unit"));
         List<PantryItem> items = Arrays.asList(
@@ -447,7 +447,7 @@ public class RecipeMatcherTest {
                 new PantryItem(2L, "Eggs", 6, "unit", null));
 
         List<RecipeMatcher.AlmostThereRecipe> almost = RecipeMatcher.getAlmostThereRecipes(
-                Arrays.asList(melktert),
+                Arrays.asList(milkTart),
                 RecipeMatcher.buildPantryQuantityMap(items, today),
                 RecipeMatcher.buildPantryQuantityMap(items));
 

@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.Dijong.TitleMedium"
                 android:textColor="@color/ink"
-                tools:text="Pampoensop (Butternut Soup)" />
+                tools:text="Butternut Soup" />
 
             <TextView
                 android:id="@+id/tv_ingredient_count"

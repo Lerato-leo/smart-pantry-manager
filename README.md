@@ -70,7 +70,7 @@ the pantry in at least the required quantity. Four out of five is not a match. S
 means:
 
 - **Only usable food counts.** Anything past its expiry date is left out, so expired milk can't
-  make melktert look ready. The recipe screen marks it "Expired" rather than "Missing".
+  make milk tart look ready. The recipe screen marks it "Expired" rather than "Missing".
 - **An ingredient listed twice must be covered twice.** Repeated lines are added together
   before checking (1 onion + 1 onion needs 2 onions).
 - **Tap water is never required**, and a recipe that needs nothing from the pantry is never

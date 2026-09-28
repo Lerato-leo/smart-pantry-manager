@@ -26,7 +26,7 @@ import za.ac.richfield.dijong.data.entity.RecipeIngredient;
 final class SouthAfricanRecipeSeeder {
 
     /** Raise this after editing the recipes below so installed copies pick up the changes. */
-    static final int SEED_VERSION = 2;
+    static final int SEED_VERSION = 3;
 
     /** How many recipes {@link #populateRecipes} adds; the brief asks for 15 to 20. */
     static final int RECIPE_COUNT = 20;
@@ -109,7 +109,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"apricot jam", 1, "tbsp"},
                 new Object[]{"vegetable oil", 1, "tbsp"});
 
-        addRecipe(recipeDao, "Melktert",
+        addRecipe(recipeDao, "Milk Tart",
                 "1. Line a pie dish with the pastry and blind bake at 200 °C for 15 minutes. "
                         + "2. Heat the milk and butter until just boiling. "
                         + "3. Whisk the eggs, sugar and flour together, then slowly whisk in the hot milk. "
@@ -293,7 +293,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"cream", 500, "ml"},
                 new Object[]{"peppermint crisp", 150, "g"});
 
-        addRecipe(recipeDao, "Pampoenkoekies (Pumpkin Fritters)",
+        addRecipe(recipeDao, "Pumpkin Fritters",
                 "1. Mash the cooked pumpkin and beat in the eggs. "
                         + "2. Mix in the flour and baking powder to make a thick batter. "
                         + "3. Fry spoonfuls in hot oil until golden on both sides. "
@@ -318,7 +318,7 @@ final class SouthAfricanRecipeSeeder {
                 new Object[]{"butter", 4, "tbsp"},
                 new Object[]{"chutney", 4, "tbsp"});
 
-        addRecipe(recipeDao, "Pampoensop (Butternut Soup)",
+        addRecipe(recipeDao, "Butternut Soup",
                 "1. Melt the butter and fry the onion until soft, then add the curry powder. "
                         + "2. Add the cubed butternut and potato and the stock. "
                         + "3. Simmer for 25 minutes until the vegetables are soft. "
