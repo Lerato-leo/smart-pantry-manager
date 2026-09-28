@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Poppins,"Segoe UI",system-ui,sans-serif;color:#2B1B24;background:#FFF8EE}
+a{color:#2B1B24;text-decoration:none}a:hover{color:#4A1942}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 360px; height: 800px; position: relative; overflow: hidden; background: #FFF8EE; display: flex; flex-direction: column">
+
+  <header style="height: 64px; flex-shrink: 0; background: #4A1942; color: #FFFFFF; padding: 0 16px; display: flex; align-items: center">
+    <h1 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 600">Settings</h1>
+  </header>
+
+  <main style="flex-grow: 1; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 20px">
+
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; padding: 0 4px; font-size: 13px; line-height: 20px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #6B5A63">Pantry and recipes</h2>
+      <div style="background: #FFFFFF; border: 1px solid #EFE3D3; border-radius: 16px; display: flex; flex-direction: column">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #EFE3D3">
+          <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">
+            <span id="set-alerts" style="font-size: 15px; line-height: 22px; font-weight: 500">Expiring-soon alerts</span>
+            <span style="font-size: 13px; line-height: 18px; color: #6B5A63">Notify me 3 days before food expires</span>
+          </span>
+          <button type="button" role="switch" aria-checked="{{ alertsChecked }}" aria-labelledby="set-alerts" onClick="{{ toggleAlerts }}" style="{{ alertsTrack }}"><span style="{{ alertsThumb }}"></span></button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px">
+          <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">
+            <span id="set-almost" style="font-size: 15px; line-height: 22px; font-weight: 500">Show Almost There list</span>
+            <span style="font-size: 13px; line-height: 18px; color: #6B5A63">Recipes missing just one ingredient</span>
+          </span>
+          <button type="button" role="switch" aria-checked="{{ almostChecked }}" aria-labelledby="set-almost" onClick="{{ toggleAlmost }}" style="{{ almostTrack }}"><span style="{{ almostThumb }}"></span></button>
+        </div>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 id="set-units" style="margin: 0; padding: 0 4px; font-size: 13px; line-height: 20px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #6B5A63">Units</h2>
+      <div role="radiogroup" aria-labelledby="set-units" style="background: #FFFFFF; border: 1px solid #EFE3D3; border-radius: 16px; display: flex; flex-direction: column">
+        <button type="button" role="radio" aria-checked="{{ metricChecked }}" onClick="{{ pickMetric }}" style="display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 16px; border: 0; border-bottom: 1px solid #EFE3D3; border-radius: 16px 16px 0 0; background: transparent; text-align: left; color: #2B1B24">
+          <span style="{{ metricRing }}"><span style="{{ metricDot }}"></span></span>
+          <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; line-height: 22px; font-weight: 500">Metric only</span><span style="font-size: 13px; line-height: 18px; color: #6B5A63">g, kg, ml, l, tsp, tbsp, cup</span></span>
+        </button>
+        <button type="button" role="radio" aria-checked="{{ imperialChecked }}" onClick="{{ pickImperial }}" style="display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 16px; border: 0; border-radius: 0 0 16px 16px; background: transparent; text-align: left; color: #2B1B24">
+          <span style="{{ imperialRing }}"><span style="{{ imperialDot }}"></span></span>
+          <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; line-height: 22px; font-weight: 500">Include imperial</span><span style="font-size: 13px; line-height: 18px; color: #6B5A63">Also show oz and lb</span></span>
+        </button>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; padding: 0 4px; font-size: 13px; line-height: 20px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #6B5A63">Sample data</h2>
+      <div style="background: #FFFFFF; border: 1px solid #EFE3D3; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+        <p style="margin: 0; font-size: 13px; line-height: 19px; color: #6B5A63">Restore the built-in recipes. Your pantry items are not changed.</p>
+        <button type="button" style="height: 48px; border: 1px solid #4A1942; border-radius: 24px; background: transparent; color: #4A1942; font-size: 15px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8"></path><path d="M4 4v5h5"></path></svg>
+          Reset sample recipes
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <nav aria-label="Main" style="height: 80px; flex-shrink: 0; display: flex; background: #FFFFFF; border-top: 1px solid #EFE3D3">
+    <a href="Pantry.dc.html" style="flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #6B5A63; font-size: 12px; font-weight: 500">
+      <span style="width: 64px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="8" width="12" height="13" rx="2.5"></rect><path d="M7.5 4h9v4h-9z"></path><path d="M9 14h6"></path></svg></span>
+      My Dijong
+    </a>
+    <a href="Cook.dc.html" style="flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #6B5A63; font-size: 12px; font-weight: 500">
+      <span style="width: 64px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v14c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"></path><path d="M12 6.5v14"></path></svg></span>
+      What Can I Cook
+    </a>
+    <a href="Settings.dc.html" aria-current="page" style="flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #0F766E; font-size: 12px; font-weight: 600">
+      <span style="width: 64px; height: 32px; border-radius: 16px; background: #D5EBE8; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></svg></span>
+      Settings
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":360,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { alerts: true, almost: true, units: 'metric' };
+  }
+  track(on) {
+    return {
+      width: '52px', height: '32px', flexShrink: 0, boxSizing: 'border-box', padding: '0 4px', borderRadius: '16px',
+      border: on ? '2px solid #4A1942' : '2px solid #9C8A92', background: on ? '#4A1942' : '#F3ECE3',
+      display: 'flex', alignItems: 'center', justifyContent: on ? 'flex-end' : 'flex-start'
+    };
+  }
+  thumb(on) {
+    return {
+      width: on ? '24px' : '16px', height: on ? '24px' : '16px', borderRadius: '12px',
+      background: on ? '#FFFFFF' : '#6B5A63', marginLeft: on ? '0' : '2px'
+    };
+  }
+  ring(on) {
+    return {
+      width: '20px', height: '20px', boxSizing: 'border-box', borderRadius: '10px', flexShrink: 0,
+      border: on ? '2px solid #4A1942' : '2px solid #6B5A63', display: 'flex', alignItems: 'center', justifyContent: 'center'
+    };
+  }
+  dot(on) {
+    return { width: '10px', height: '10px', borderRadius: '5px', background: on ? '#4A1942' : 'transparent' };
+  }
+  renderVals() {
+    const s = this.state;
+    const metric = s.units === 'metric';
+    return {
+      alertsChecked: s.alerts ? 'true' : 'false',
+      almostChecked: s.almost ? 'true' : 'false',
+      metricChecked: metric ? 'true' : 'false',
+      imperialChecked: metric ? 'false' : 'true',
+      alertsTrack: this.track(s.alerts), alertsThumb: this.thumb(s.alerts),
+      almostTrack: this.track(s.almost), almostThumb: this.thumb(s.almost),
+      metricRing: this.ring(metric), metricDot: this.dot(metric),
+      imperialRing: this.ring(!metric), imperialDot: this.dot(!metric),
+      toggleAlerts: () => this.setState({ alerts: !s.alerts }),
+      toggleAlmost: () => this.setState({ almost: !s.almost }),
+      pickMetric: () => this.setState({ units: 'metric' }),
+      pickImperial: () => this.setState({ units: 'imperial' })
+    };
+  }
+}
+</script>
+</body>
+</html>

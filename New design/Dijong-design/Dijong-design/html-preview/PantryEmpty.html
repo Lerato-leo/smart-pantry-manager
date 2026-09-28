@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Dijong empty state</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Poppins,"Segoe UI",system-ui,sans-serif;color:#2B1B24;background:#FFF8EE}
+a{color:#2B1B24;text-decoration:none}a:hover{color:#4A1942}
+</style>
+
+</head>
+<body>
+<div style="width: 360px; height: 800px; position: relative; overflow: hidden; background: #FFF8EE; display: flex; flex-direction: column">
+
+  <header style="background: #4A1942; color: #FFFFFF; padding: 16px 16px 14px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0">
+    <h1 style="margin: 0; font-size: 22px; line-height: 30px; font-weight: 600">My Dijong</h1>
+    <p style="margin: 0; font-size: 13px; line-height: 18px; color: #EBD9E6">Know what you have before it goes off</p>
+  </header>
+
+  <main style="flex-grow: 1; padding: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center">
+    <svg width="176" height="144" viewBox="0 0 176 144" aria-hidden="true">
+      <ellipse cx="88" cy="128" rx="76" ry="8" fill="#F3E6D4"></ellipse>
+      <rect x="12" y="112" width="152" height="8" rx="4" fill="#4A1942"></rect>
+      <rect x="30" y="52" width="48" height="60" rx="10" fill="#FFFFFF" stroke="#4A1942" stroke-width="3"></rect>
+      <rect x="34" y="40" width="40" height="14" rx="4" fill="#E0A100"></rect>
+      <path d="M40 92 H68" stroke="#EFE3D3" stroke-width="3" stroke-linecap="round"></path>
+      <rect x="92" y="68" width="54" height="44" rx="10" fill="#FFFFFF" stroke="#4A1942" stroke-width="3"></rect>
+      <rect x="96" y="58" width="46" height="12" rx="4" fill="#E0A100"></rect>
+      <path d="M119 58 C119 44 128 36 140 36 C140 49 132 58 119 58 Z" fill="#0F766E"></path>
+      <path d="M122 55 L134 43" stroke="#FFF8EE" stroke-width="1.8" stroke-linecap="round"></path>
+    </svg>
+    <h2 style="margin: 8px 0 0; font-size: 20px; line-height: 28px; font-weight: 600">Your pantry is empty</h2>
+    <p style="margin: 0; max-width: 264px; font-size: 14px; line-height: 21px; color: #6B5A63">Tap + to add your first ingredient and start tracking what you have.</p>
+  </main>
+
+  <a href="AddIngredient.html" aria-label="Add ingredient" style="position: absolute; right: 16px; bottom: 96px; width: 56px; height: 56px; border-radius: 16px; background: #4A1942; color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(74,25,66,0.28)">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+  </a>
+
+  <nav aria-label="Main" style="height: 80px; flex-shrink: 0; display: flex; background: #FFFFFF; border-top: 1px solid #EFE3D3">
+    <a href="Pantry.html" aria-current="page" style="flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #0F766E; font-size: 12px; font-weight: 600">
+      <span style="width: 64px; height: 32px; border-radius: 16px; background: #D5EBE8; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="8" width="12" height="13" rx="2.5"></rect><path d="M7.5 4h9v4h-9z"></path><path d="M9 14h6"></path></svg></span>
+      My Dijong
+    </a>
+    <a href="CookEmpty.html" style="flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #6B5A63; font-size: 12px; font-weight: 500">
+      <span style="width: 64px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v14c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"></path><path d="M12 6.5v14"></path></svg></span>
+      What Can I Cook
+    </a>
+    <a href="Settings.html" style="flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #6B5A63; font-size: 12px; font-weight: 500">
+      <span style="width: 64px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></svg></span>
+      Settings
+    </a>
+  </nav>
+</div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1440, "h": 780, "title": "Logo & launcher icon" },
+    "Pantry.dc.html": { "x": 0, "y": 1200, "w": 360, "h": 800, "title": "1a · My Dijong", "is_interactive": true },
+    "PantryEmpty.dc.html": { "x": 440, "y": 1200, "w": 360, "h": 800, "title": "1b · My Dijong (empty)", "is_interactive": true },
+    "AddIngredient.dc.html": { "x": 880, "y": 1200, "w": 360, "h": 800, "title": "2a · Add ingredient", "is_interactive": true },
+    "EditIngredient.dc.html": { "x": 1320, "y": 1200, "w": 360, "h": 800, "title": "2b · Edit ingredient", "is_interactive": true },
+    "Cook.dc.html": { "x": 1760, "y": 1200, "w": 360, "h": 800, "title": "3a · What Can I Cook", "is_interactive": true },
+    "CookEmpty.dc.html": { "x": 2200, "y": 1200, "w": 360, "h": 800, "title": "3b · What Can I Cook (empty)", "is_interactive": true },
+    "RecipeDetail.dc.html": { "x": 2640, "y": 1200, "w": 360, "h": 800, "title": "4 · Recipe detail", "is_interactive": true },
+    "Settings.dc.html": { "x": 3080, "y": 1200, "w": 360, "h": 800, "title": "5 · Settings", "is_interactive": true }
+  },
+  "createdOnFiles": { "at": "2026-09-27T21:42:17.232Z", "v": 1 },
+  "designSystems": [],
+  "launch": { "view": "canvas" },
+  "notes": {
+    "screens": { "x": 0, "y": 900, "text": "Dijong app screens · 360 × 800 dp", "kind": "title1", "maxW": 3440 }
+  },
+  "order": [
+    "Main.dc.html",
+    "Pantry.dc.html",
+    "PantryEmpty.dc.html",
+    "AddIngredient.dc.html",
+    "EditIngredient.dc.html",
+    "Cook.dc.html",
+    "CookEmpty.dc.html",
+    "RecipeDetail.dc.html",
+    "Settings.dc.html"
+  ],
+  "pages": [],
+  "title": "Dijong"
+}
